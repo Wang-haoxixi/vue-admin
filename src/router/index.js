@@ -29,6 +29,7 @@ const routes = [
     component: Layout,
     meta: {
       name: "控制台",
+      icon: "console",
     },
     children: [
       {
@@ -48,6 +49,7 @@ const routes = [
     component: Layout,
     meta: {
       name: "信息管理",
+      icon: "info",
     },
     children: [
       {
@@ -75,6 +77,7 @@ const routes = [
     component: Layout,
     meta: {
       name: "用户管理",
+      icon: "user",
     },
     children: [
       {

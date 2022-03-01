@@ -2,7 +2,6 @@
   <div id="navMenu">
     <el-menu
       default-active="1-4-1"
-      class="el-menu-vertical-demo"
       background-color="transparent"
       text-color="#fff"
       @open="handleOpen"
@@ -14,7 +13,8 @@
         <el-submenu :index="item.path" :key="index" v-if="!item.hidden">
           <!-- 一级菜单 -->
           <template slot="title">
-            <i class="el-icon-location"></i>
+            <!-- <i class="el-icon-location"></i> -->
+            <svg-icon :iconName="item.meta.icon" class="svgicon" />
             <span slot="title">{{ item.meta.name }}</span>
           </template>
           <!-- 子级菜单 -->
@@ -22,7 +22,7 @@
         </el-submenu>
       </template>
     </el-menu>
-    <svg-icon/>
+    
   </div>
 </template>
 
@@ -68,5 +68,9 @@ export default {
   height: 100vh;
   width: $navMenuWidth;
   background: #344a5f;
+  .svgicon{
+    margin-right: 5px;
+    font-size: 16px;
+  }
 }
 </style>
