@@ -3,7 +3,6 @@
 </template>
 
 <script>
-import "@/styles/config.scss";
 export default {};
 </script>
 

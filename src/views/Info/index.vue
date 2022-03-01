@@ -1,10 +1,11 @@
 <template>
-  <div>新闻</div>
+  <div>信息列表</div>
 </template>
 
 <script>
 export default {};
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
+
 </style>

@@ -8,25 +8,26 @@
       @open="handleOpen"
       @close="handleClose"
       :collapse="isCollapse"
+      router
     >
       <template v-for="(item, index) in navData">
-        <el-submenu :index="index" :key="index" v-if="!item.hidden">
+        <el-submenu :index="item.path" :key="index" v-if="!item.hidden">
           <!-- 一级菜单 -->
           <template slot="title">
             <i class="el-icon-location"></i>
             <span slot="title">{{ item.meta.name }}</span>
           </template>
           <!-- 子级菜单 -->
-          <el-menu-item v-for="(subItem, subIndex) in item.children" :key="subIndex" :index="subIndex">{{ subItem.meta.name }}</el-menu-item>
+          <el-menu-item v-for="(subItem, subIndex) in item.children" :key="subIndex" :index="subItem.path">{{ subItem.meta.name }}</el-menu-item>
         </el-submenu>
       </template>
     </el-menu>
+    <svg-icon/>
   </div>
 </template>
 
 <script>
 import { reactive, ref, isRef, toRefs, onMounted } from "@vue/composition-api";
-import "@/styles/config.scss";
 export default {
   name: "navMenu",
   setup(props, { root, content }) {

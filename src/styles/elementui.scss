@@ -1,0 +1,17 @@
+// 设置elementUI全局样式
+.el-submenu .el-menu-item {
+  padding-left: 50px !important;
+  font-size: 15px;
+  &.is-active {
+    background: rgba(245, 108, 108, .2) !important;
+  }
+}
+li.el-submenu{
+  &.is-active,.is-opened{
+    .el-submenu__title{
+      background: $mainColor !important;
+    }
+  }
+  
+
+} 
