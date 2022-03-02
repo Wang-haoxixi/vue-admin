@@ -1,12 +1,15 @@
 <template>
   <div id="navMenu">
+    <h1 class="logo">
+      <img src="../../../assets/vuelogo.png" alt="" />
+    </h1>
     <el-menu
       default-active="1-4-1"
       background-color="transparent"
       text-color="#fff"
       @open="handleOpen"
       @close="handleClose"
-      :collapse="isCollapse"
+      :collapse="navMenuStatus"
       router
     >
       <template v-for="(item, index) in navData">
@@ -18,31 +21,40 @@
             <span slot="title">{{ item.meta.name }}</span>
           </template>
           <!-- 子级菜单 -->
-          <el-menu-item v-for="(subItem, subIndex) in item.children" :key="subIndex" :index="subItem.path">{{ subItem.meta.name }}</el-menu-item>
+          <el-menu-item
+            v-for="(subItem, subIndex) in item.children"
+            :key="subIndex"
+            :index="subItem.path"
+            >{{ subItem.meta.name }}</el-menu-item
+          >
         </el-submenu>
       </template>
     </el-menu>
-    
   </div>
 </template>
 
 <script>
-import { reactive, ref, isRef, toRefs, onMounted } from "@vue/composition-api";
+import { reactive, ref, isRef, toRefs, onMounted, computed } from "@vue/composition-api";
 export default {
   name: "navMenu",
-  setup(props, { root, content }) {
-    console.log(root.$router.options.routes)
+  setup(props, { root, content, }) {
+    // 获取state
+    console.log("state...", root.$store.state.isCollapse);
+    console.log("getters...", root.$store.getters.countAdd);
+    root.$store.commit("SET_COUNT", 111);
     /**
      * data
-    */
-    // 控制菜单导航收缩
-    const isCollapse = ref(false);
+     */
     // 菜单导航路由数据
     const navData = ref(root.$router.options.routes);
 
     /**
      * methods
-    */
+     */
+    // 导航菜单收缩  监听状态机中的isCollapse状态并返回值
+    const navMenuStatus = computed(() => {
+      return root.$store.state.isCollapse;
+    });
     const handleOpen = (key, keyPath) => {
       console.log(key, keyPath);
     };
@@ -51,10 +63,10 @@ export default {
     };
 
     return {
-      isCollapse,
+      navMenuStatus,
       handleOpen,
       handleClose,
-      navData
+      navData,
     };
   },
 };
@@ -68,7 +80,16 @@ export default {
   height: 100vh;
   width: $navMenuWidth;
   background: #344a5f;
-  .svgicon{
+  .logo {
+    img {
+      margin: auto;
+      width: 70px;
+      display: block;
+      margin-top: 28px;
+      margin-bottom: 25px;
+    }
+  }
+  .svgicon {
     margin-right: 5px;
     font-size: 16px;
   }
