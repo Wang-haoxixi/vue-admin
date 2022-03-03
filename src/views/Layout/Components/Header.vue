@@ -1,5 +1,5 @@
 <template>
-  <div id="header">
+  <div id="header" :class="[navMenuStatus ? 'close' : 'open']">
     <div class="pull-left header-icon" @click="changNavMenuStatus">
       <svg-icon iconName="menu" />
     </div>
@@ -17,15 +17,22 @@
 
 <script>
 import SvgIcon from "../../../icons/SvgIcon.vue";
+import { computed } from "@vue/composition-api";
 export default {
   name: "layoutHeader",
   components: { SvgIcon },
   setup(props, { root }) {
+    // 监听状态机中的菜单收缩
+    const navMenuStatus = computed(()=>{
+      return root.$store.state.isCollapse
+    })
+
     // 收缩导航菜单
     const changNavMenuStatus = () => {
       root.$store.commit("SET_COLLAPSE");
     };
     return {
+      navMenuStatus,
       changNavMenuStatus,
     };
   },
@@ -36,12 +43,18 @@ export default {
 #header {
   position: fixed;
   top: 0;
-  left: $navMenuWidth;
   right: 0;
   height: $layoutHeader;
   background: #fff;
   box-shadow: 0px 3px 16px 0px rgba(0, 0, 0, 0.1);
   line-height: $layoutHeader;
+  transition: all .5s;
+  &.open{
+    left: $navMenuWidth;
+  }
+  &.close{
+    left: 64px;
+  }
 }
 .header-icon {
   padding: 0 30px;

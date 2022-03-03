@@ -1,5 +1,5 @@
 <template>
-  <div id="main">
+  <div id="main" :class="[navMenuStatus ? 'close' : 'open']">
     <div class="main-warp">
       <div class="content">
         <router-view />
@@ -9,7 +9,18 @@
 </template>
 
 <script>
-export default {};
+import { computed } from "@vue/composition-api";
+export default {
+  name: "layoutMain",
+  setup(props, { root }) {
+    const navMenuStatus = computed(() => {
+      return root.$store.state.isCollapse;
+    });
+    return {
+      navMenuStatus,
+    };
+  },
+};
 </script>
 
 <style lang="scss" scoped>
@@ -23,9 +34,16 @@ export default {};
   // height: 100vh;
   // padding-left: $navmenuWidth;
   height: 100vh;
-  padding-left: $navMenuWidth;
-  padding-top: $layoutHeader;
   box-sizing: border-box;
+  transition: all .5s;
+  &.open {
+    padding-left: $navMenuWidth;
+    padding-top: $layoutHeader;
+  }
+  &.close {
+    padding-left: 64px;
+    padding-top: $layoutHeader;
+  }
   .main-warp {
     width: 100%;
     height: 100%;

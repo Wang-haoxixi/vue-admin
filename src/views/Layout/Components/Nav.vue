@@ -1,10 +1,9 @@
 <template>
-  <div id="navMenu">
+  <div id="navMenu" :class="[navMenuStatus ? 'close' : 'open']">
     <h1 class="logo">
-      <img src="../../../assets/vuelogo.png" alt="" />
+      <img src="../../../assets/vuelogo.png" alt=""/>
     </h1>
     <el-menu
-      default-active="1-4-1"
       background-color="transparent"
       text-color="#fff"
       @open="handleOpen"
@@ -38,16 +37,11 @@ import { reactive, ref, isRef, toRefs, onMounted, computed } from "@vue/composit
 export default {
   name: "navMenu",
   setup(props, { root, content, }) {
-    // 获取state
-    console.log("state...", root.$store.state.isCollapse);
-    console.log("getters...", root.$store.getters.countAdd);
-    root.$store.commit("SET_COUNT", 111);
     /**
      * data
      */
     // 菜单导航路由数据
     const navData = ref(root.$router.options.routes);
-
     /**
      * methods
      */
@@ -78,15 +72,30 @@ export default {
   left: 0;
   top: 0;
   height: 100vh;
-  width: $navMenuWidth;
   background: #344a5f;
-  .logo {
-    img {
-      margin: auto;
-      width: 70px;
-      display: block;
-      margin-top: 28px;
-      margin-bottom: 25px;
+  transition: all .5s;
+  &.open{
+    width: $navMenuWidth;
+    .logo {
+      img {
+        margin: auto;
+        width: 70px;
+        display: block;
+        margin-top: 28px;
+        margin-bottom: 25px;
+      }
+    }
+  }
+  &.close{
+    width: 64px;
+    .logo {
+      img {
+        margin: auto;
+        width: 50px;
+        display: block;
+        margin-top: 28px;
+        margin-bottom: 25px;
+      }
     }
   }
   .svgicon {
