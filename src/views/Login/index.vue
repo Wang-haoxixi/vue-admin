@@ -66,7 +66,7 @@
 
 <script>
 import sha1 from "sha1";
-import { GetSms, Register, Login } from "@/api/login.js";
+import { GetSms, Register } from "@/api/login.js";
 import { reactive, ref, isRef, toRefs, onMounted } from "@vue/composition-api";
 import { stripscript, emailReg, codeReg } from "@/utils/validate.js";
 export default {
@@ -184,19 +184,20 @@ export default {
      * 登录
     */
     const login = ()=>{
-      let data = {
+      // 请求参数
+      let queryData = {
         username: ruleForm.email,
         password: sha1(ruleForm.pwd),  //加密 sha1
         code: ruleForm.code,
       }
-      Login(data).then(({ data })=>{
+      content.root.$store.dispatch("app/LOGINING", queryData).then(({ data }) => {
         if(data.resCode === 0){
+          content.root.$message.success(data.message);
           content.root.$router.push({ name: 'Console' });
           content.root.$message.success(data.message);
+          clearClearIntervalFn();
         }
-      }).catch(err=>{
-        console.log(err)
-      })    
+      })
     };
     /**
      * 注册

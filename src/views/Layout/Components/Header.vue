@@ -6,9 +6,9 @@
     <div class="pull-right right-box">
       <div class="user-info">
         <img src="../../../assets/header-image.png" />
-        <span>管理员</span>
+        <span>{{ userName }}</span>
       </div>
-      <div class="header-icon">
+      <div class="header-icon" @click="exit">
         <svg-icon iconName="exit" />
       </div>
     </div>
@@ -23,17 +23,29 @@ export default {
   components: { SvgIcon },
   setup(props, { root }) {
     // 监听状态机中的菜单收缩
-    const navMenuStatus = computed(()=>{
-      return root.$store.state.isCollapse
-    })
+    const navMenuStatus = computed(() => {
+      return root.$store.state.app.isCollapse;
+    });
+
+    const userName = computed(() => {
+      return root.$store.state.app.username;
+    });
 
     // 收缩导航菜单
     const changNavMenuStatus = () => {
-      root.$store.commit("SET_COLLAPSE");
+      root.$store.commit("app/SET_COLLAPSE");
+    };
+    // 退出
+    const exit = () => {
+      root.$store.dispatch("app/EXIT").then(() => {
+        root.$router.push({ name: "Login" });
+      });
     };
     return {
       navMenuStatus,
       changNavMenuStatus,
+      userName,
+      exit,
     };
   },
 };
@@ -48,11 +60,11 @@ export default {
   background: #fff;
   box-shadow: 0px 3px 16px 0px rgba(0, 0, 0, 0.1);
   line-height: $layoutHeader;
-  transition: all .5s;
-  &.open{
+  transition: all 0.5s;
+  &.open {
     left: $navMenuWidth;
   }
-  &.close{
+  &.close {
     left: 64px;
   }
 }

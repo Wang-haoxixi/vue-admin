@@ -47,7 +47,7 @@ export default {
      */
     // 导航菜单收缩  监听状态机中的isCollapse状态并返回值
     const navMenuStatus = computed(() => {
-      return root.$store.state.isCollapse;
+      return root.$store.state.app.isCollapse;
     });
     const handleOpen = (key, keyPath) => {
       console.log(key, keyPath);

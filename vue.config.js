@@ -66,7 +66,7 @@ module.exports = {
     proxy: { // string | Object  // 设置代理
       '/api': {
         /* 目标代理服务器地址 */
-        target: 'http://old.web-jshtml.cn/productapi',
+        target: 'http://old.web-jshtml.cn/productapi/token',
         /* 允许跨域 */
         changeOrigin: true,
         pathRewrite: {

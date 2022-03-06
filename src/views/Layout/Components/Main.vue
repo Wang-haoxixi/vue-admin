@@ -13,8 +13,9 @@ import { computed } from "@vue/composition-api";
 export default {
   name: "layoutMain",
   setup(props, { root }) {
+
     const navMenuStatus = computed(() => {
-      return root.$store.state.isCollapse;
+      return root.$store.state.app.isCollapse;
     });
     return {
       navMenuStatus,

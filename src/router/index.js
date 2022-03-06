@@ -25,7 +25,7 @@ const routes = [
   {
     path: "/console",
     name: "Console",
-    redirect: "index",
+    redirect: "/index",
     component: Layout,
     meta: {
       name: "控制台",

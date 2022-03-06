@@ -4,8 +4,9 @@ import router from "./router";
 import store from "./store";
 import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
-import VueCompositionApi from '@vue/composition-api'; 
+import VueCompositionApi from '@vue/composition-api';
 import "./icons"; /* 自定义全局组件 */
+import './router/defend.js'
 
 Vue.use(VueCompositionApi);
 
