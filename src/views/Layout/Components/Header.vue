@@ -56,6 +56,7 @@ export default {
   position: fixed;
   top: 0;
   right: 0;
+  z-index: 1000;
   height: $layoutHeader;
   background: #fff;
   box-shadow: 0px 3px 16px 0px rgba(0, 0, 0, 0.1);
