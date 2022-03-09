@@ -47,7 +47,9 @@
         <el-button type="primary" class="search-btn">搜索</el-button>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" class="search-btn">添加</el-button>
+        <el-button type="primary" class="search-btn" @click="handleAdd"
+          >添加</el-button
+        >
       </el-form-item>
     </el-form>
 
@@ -66,7 +68,7 @@
       </el-table-column>
     </el-table>
     <div class="del-pagination">
-      <el-button type="danger">批量删除</el-button>
+      <el-button type="medium">批量删除</el-button>
       <el-pagination
         background
         @size-change="handleSizeChange"
@@ -79,20 +81,27 @@
       >
       </el-pagination>
     </div>
+    <DialogInfo :flag.sync="dialogInfo" @close="closeDialog" />
   </div>
 </template>
 
 <script>
+import DialogInfo from "./Dialog/info.vue";
 import { reactive, ref } from "@vue/composition-api";
 export default {
   name: "info",
-  setup() {
+  components: {
+    DialogInfo,
+  },
+  setup(props, { root }) {
     // 当前页
     const currentPage = ref(1);
     // 总数
     const total = ref(0);
     // 每页显示条数
     const pageSize = ref(10);
+    // 添加信息dialog
+    const dialogInfo = ref(false);
     // 顶部搜索表单数据
     const formData = reactive({
       cate: 1, // 类别
@@ -168,6 +177,14 @@ export default {
     const handleCurrentChange = (val) => {
       console.log(`当前页: ${val}`);
     };
+    // 添加按钮 控制弹窗显隐
+    const handleAdd = () => {
+      dialogInfo.value = true;
+    };
+    // 关闭弹窗，子组件的回调
+    const closeDialog = () => {
+      dialogInfo.value = false;
+    };
     return {
       currentPage,
       total,
@@ -176,8 +193,11 @@ export default {
       cateOption,
       keywordOption,
       infoTableData,
+      dialogInfo,
       handleSizeChange,
       handleCurrentChange,
+      handleAdd,
+      closeDialog,
     };
   },
 };
@@ -191,8 +211,8 @@ export default {
     justify-content: space-between;
     align-items: center;
   }
-  .form-item-cate{
-    .el-form-item__content{
+  .form-item-cate {
+    .el-form-item__content {
       width: 110px;
     }
   }
