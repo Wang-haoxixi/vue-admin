@@ -81,7 +81,8 @@
       >
       </el-pagination>
     </div>
-    <DialogInfo :flag.sync="dialogInfo" @close="closeDialog" />
+    <!-- <DialogInfo :flag.sync="dialogInfo" @close="closeDialog" /> -->
+    <DialogInfo :flag.sync="dialogInfo" />
   </div>
 </template>
 
@@ -182,9 +183,9 @@ export default {
       dialogInfo.value = true;
     };
     // 关闭弹窗，子组件的回调
-    const closeDialog = () => {
-      dialogInfo.value = false;
-    };
+    // const closeDialog = () => {
+    //   dialogInfo.value = false;
+    // };
     return {
       currentPage,
       total,
@@ -197,7 +198,7 @@ export default {
       handleSizeChange,
       handleCurrentChange,
       handleAdd,
-      closeDialog,
+      // closeDialog,
     };
   },
 };

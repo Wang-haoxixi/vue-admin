@@ -22,7 +22,8 @@ export default {
 
     // dialog弹窗关闭后触发
     const close = () => {
-      emit("close");
+      // emit("close"); // 需要做逻辑处理时用回调的方式触发父组件方法
+      emit("update:flag", false); // 无逻辑处理时可以使用 .sync 修饰符的方式来处理
     };
 
     // 侦听父组件传进来flag的变化，若变化了，给dialog_info_flag重新赋值
