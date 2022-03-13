@@ -63,12 +63,12 @@
         <template>
           <el-button size="mini" type="success">编辑</el-button>
           <el-button size="mini" type="success">编辑详情</el-button>
-          <el-button size="mini" type="danger">删除</el-button>
+          <el-button size="mini" type="danger" @click="delCurrent">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
     <div class="del-pagination">
-      <el-button type="medium">批量删除</el-button>
+      <el-button type="medium" @click="delSelected">批量删除</el-button>
       <el-pagination
         background
         @size-change="handleSizeChange"
@@ -186,6 +186,33 @@ export default {
     // const closeDialog = () => {
     //   dialogInfo.value = false;
     // };
+    // 删除当前信息
+    const delCurrent = () => {
+      root.confirm({
+        content: "确认删除此信息？",
+        tip: "警告",
+        type: "warning",
+        fn: callDel,
+      });
+      
+    }
+    // 删除所选信息
+    const delSelected = () => {
+      root.confirm({
+        content: "确认删除所选信息？",
+        tip: "",
+        type: "warning",
+        fn: callSelectedDel,
+      });
+    }
+    // 调用删除接口
+    const callDel = () => {
+      console.log("调用删除接口..")
+    };
+    // 调用批量删除接口
+    const callSelectedDel = () => {
+      console.log("调用批量删除接口..")
+    };
     return {
       currentPage,
       total,
@@ -199,6 +226,9 @@ export default {
       handleCurrentChange,
       handleAdd,
       // closeDialog,
+      delCurrent,
+      delSelected,
+
     };
   },
 };
