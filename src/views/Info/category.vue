@@ -1,6 +1,6 @@
 <template>
   <div class="infoCate-warp">
-    <el-button type="danger">添加一级分类</el-button>
+    <el-button type="danger" @click="handleAddFirst({ type: 'cate_first_add' })" class="button-first">添加一级分类</el-button>
     <el-row :gutter="20">
       <el-col :span="8">
         <div class="cate-item">
@@ -8,16 +8,16 @@
             <svg-icon iconName="plus"></svg-icon>
             <span>国内</span> 
             <div class="btns pull-right">
-              <el-button round type="danger" size="mini">编辑</el-button>
-              <el-button round type="success" size="mini">添加子级</el-button>
-              <el-button round size="mini">删除</el-button>
+              <el-button round type="danger" size="mini" @click="handleEditFirst({ type: 'cate_first_edit' })">编辑</el-button>
+              <el-button round type="success" size="mini" @click="handleAddChildren({ type: 'cate_children_add' })">添加子级</el-button>
+              <el-button round size="mini" @click="handleDeleteFirst">删除</el-button>
             </div>
           </h4>
           <ul>
             <li>
               <span>国际</span>
               <div class="btns pull-right">
-                <el-button round type="danger" size="mini">编辑</el-button>
+                <el-button round type="danger" size="mini" @click="handleEditChildren({ type: 'cate_children_edit' })">编辑</el-button>
                 <el-button round size="mini">删除</el-button>
               </div>
             </li>
@@ -46,7 +46,7 @@
         </div>
         <div class="cate-item">
           <h4 class="clearfloat">
-            <svg-icon iconName="plus"></svg-icon>
+            <svg-icon iconName="minus"></svg-icon>
             <span>国内</span> 
             <div class="btns pull-right">
               <el-button round type="danger" size="mini">编辑</el-button>
@@ -90,10 +90,13 @@
         <div class="menu-title">一级分类编辑</div>
         <el-form ref="form" :model="form" label-width="120px" class="cate-form">
           <el-form-item label="一级分类名称：">
-            <el-input v-model="form.firstName"></el-input>
+            <el-input v-model="form.firstName" :disabled="disabled_first"></el-input>
           </el-form-item>
           <el-form-item label="二级分类名称：">
-            <el-input v-model="form.secondName"></el-input>
+            <el-input v-model="form.secondName" :disabled="disabled_second"></el-input>
+          </el-form-item>
+          <el-form-item>
+            <el-button type="danger" :disabled="disabled_botton" :loading="loading" @click="handleConfrim">确定</el-button>
           </el-form-item>
         </el-form>
       </el-col>
@@ -103,17 +106,82 @@
 
 <script>
 import { reactive, ref, isRef, toRefs, onMounted, computed } from "@vue/composition-api";
+import { AddParent } from '@/api/news.js'
 import SvgIcon from '../../icons/SvgIcon.vue';
 export default {
   components: { SvgIcon },
   name: "infoCate",
   setup(){
+    const submit_button_type = ref("");
+    const disabled_first = ref(true);
+    const disabled_second = ref(true);
+    const disabled_botton = ref(true);
+    // 确定按钮加载
+    const loading = ref(false);
+
     const form = reactive({
       firstName: "",
       secondName: "",
-    })
+    });
+    
+    // -------------------------------------------------
+
+    // 添加一级分类按钮
+    const handleAddFirst = (data) => {
+      submit_button_type.value = data.type;
+      disabled_first.value = false;
+      disabled_second.value = true;
+      disabled_botton.value = false;
+    };
+    // 添加子级
+    const handleAddChildren = (data) => {
+      submit_button_type.value = data.type;
+      disabled_first.value = true;
+      disabled_second.value = false;
+      disabled_botton.value = false;
+    };
+    // 编辑一级分类
+    const handleEditFirst = (data) => {
+      submit_button_type.value = data.type;
+      disabled_first.value = false;
+      disabled_second.value = true;
+      disabled_botton.value = false;
+    };
+    // 编辑子级
+    const handleEditChildren = (data) => {
+      submit_button_type.value = data.type;
+      disabled_first.value = true;
+      disabled_second.value = false;
+      disabled_botton.value = false;
+
+    };
+    // 删除一级分类
+    const handleDeleteFirst = () => {
+      console.log('删除一级分类...');
+    }
+    const handleConfrim = () => {
+      if(submit_button_type.value == "cate_first_add"){ console.log("cate_first_add..."); };
+      if(submit_button_type.value == "cate_children_add"){ console.log("cate_children_add..."); };
+      if(submit_button_type.value == "cate_first_edit"){ console.log("cate_first_edit..."); };
+      // AddParent({ categoryName: form.firstName }).then(res=>{
+      //   console.log(res)
+      // })
+    }
     return{
-      form
+      // value
+      submit_button_type,
+      disabled_first,
+      disabled_second,
+      disabled_botton,
+      loading,
+      form,
+      // methods
+      handleAddFirst,
+      handleAddChildren,
+      handleEditFirst,
+      handleEditChildren,
+      handleDeleteFirst,
+      handleConfrim,
     }
   }
 };
@@ -121,6 +189,9 @@ export default {
 
 <style lang="scss" scoped>
 .infoCate-warp {
+  .button-first{
+    margin-bottom: 20px;
+  }
   .cate-item:first-of-type{
     &::before{
       top: 22px;
@@ -162,6 +233,7 @@ export default {
       transition: all .5s ease;
       display: none;
       padding-right: 20px;
+      font-size: 12px;
     }
     li{
       margin-left: 28px;

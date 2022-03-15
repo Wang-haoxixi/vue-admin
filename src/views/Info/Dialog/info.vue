@@ -1,7 +1,24 @@
 <template>
   <div>
-    <el-dialog title="添加信息" :visible.sync="dialog_info_flag" @close="close">
-      111111
+    <el-dialog title="新增" :visible.sync="dialog_info_flag" @close="close" width="576px">
+      <el-form ref="form" :model="form" label-width="60px" >
+        <el-form-item label="类型：">
+          <el-select v-model="form.type" placeholder="请选择">
+            <el-option label="区域一" value="shanghai"></el-option>
+            <el-option label="区域二" value="beijing"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="标题：">
+          <el-input v-model="form.title"></el-input>
+        </el-form-item>
+        <el-form-item label="概况：">
+          <el-input type="textarea" v-model="form.case"></el-input>
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="dialog_info_flag = false">取 消</el-button>
+        <el-button type="danger" @click="dialog_info_flag = false">确 定</el-button>
+      </span>
     </el-dialog>
   </div>
 </template>
@@ -17,6 +34,12 @@ export default {
     },
   },
   setup(props, { root, emit }) {
+    const form = reactive({
+      type: "",
+      title: "",
+      case: "",
+    })
+
     // 控制弹框显隐
     const dialog_info_flag = ref(false);
 
@@ -33,6 +56,7 @@ export default {
     });
 
     return {
+      form,
       dialog_info_flag,
       close,
     };

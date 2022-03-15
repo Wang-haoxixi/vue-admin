@@ -12,6 +12,19 @@ li.el-submenu{
       background: $mainColor !important;
     }
   }
-  
-
 } 
+
+/* dialog样式 */
+.el-dialog__header{
+  padding: 25px 20px 10px 30px;
+}
+.el-dialog__body{
+  padding: 30px 48px 0px 43px;
+}
+.el-dialog__footer{
+  padding: 22px 48px 50px;
+  text-align: center;
+  .el-button{
+    width: 150px;
+  }
+}
