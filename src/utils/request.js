@@ -4,7 +4,7 @@ import axios from "axios"
 const BASEURL = process.env.NODE_ENV === 'production' ? '' : '/api';
 // 创建axios,赋给变量service
 const service = axios.create({
-  baseURL: BASEURL, //每次发送的请求都会带上该前缀
+  baseURL: BASEURL, //每次发送的请求都会带上该前缀   http://192.168.0.106:8080/api/  == http://www.web-jshtml.cn/api/
   timeout: 10000,
 });
 

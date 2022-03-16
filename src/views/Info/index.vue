@@ -88,13 +88,17 @@
 
 <script>
 import DialogInfo from "./Dialog/info.vue";
-import { reactive, ref } from "@vue/composition-api";
+import { reactive, ref, onMounted} from "@vue/composition-api";
+import { GetList } from "@/api/news.js"
 export default {
   name: "info",
   components: {
     DialogInfo,
   },
   setup(props, { root }) {
+    onMounted(() => {
+      getList();
+    });
     // 当前页
     const currentPage = ref(1);
     // 总数
@@ -170,6 +174,8 @@ export default {
       },
     ]);
 
+    // -------------------------------------------------------
+
     // 切换页数
     const handleSizeChange = (val) => {
       console.log(`每页 ${val} 条`);
@@ -212,6 +218,18 @@ export default {
     // 调用批量删除接口
     const callSelectedDel = () => {
       console.log("调用批量删除接口..")
+    };
+    // 信息列表
+    const getList = () => {
+      let requestData = {
+        // categoryId: 1,
+        // title: "vue3",
+        pageNumber: 1,
+        pageSize: 10
+      }
+      GetList(requestData).then(response => {
+        console.log(response)
+      })
     };
     return {
       currentPage,

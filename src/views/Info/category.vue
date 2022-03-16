@@ -3,17 +3,17 @@
     <el-button type="danger" @click="handleAddFirst({ type: 'cate_first_add' })" class="button-first">添加一级分类</el-button>
     <el-row :gutter="20">
       <el-col :span="8">
-        <div class="cate-item">
+        <div class="cate-item" v-for="(item, index) in cateList.data" :key="index">
           <h4 class="clearfloat">
             <svg-icon iconName="plus"></svg-icon>
-            <span>国内</span> 
+            <span>{{ item.category_name }}</span> 
             <div class="btns pull-right">
-              <el-button round type="danger" size="mini" @click="handleEditFirst({ type: 'cate_first_edit' })">编辑</el-button>
+              <el-button round type="danger" size="mini" @click="handleEditFirst({ type: 'cate_first_edit', item, })">编辑</el-button>
               <el-button round type="success" size="mini" @click="handleAddChildren({ type: 'cate_children_add' })">添加子级</el-button>
-              <el-button round size="mini" @click="handleDeleteFirst">删除</el-button>
+              <el-button round size="mini" @click="handleDeleteFirst(item, index)">删除</el-button>
             </div>
           </h4>
-          <ul>
+          <!-- <ul>
             <li>
               <span>国际</span>
               <div class="btns pull-right">
@@ -42,48 +42,7 @@
                 <el-button round size="mini">删除</el-button>
               </div>
             </li>
-          </ul>
-        </div>
-        <div class="cate-item">
-          <h4 class="clearfloat">
-            <svg-icon iconName="minus"></svg-icon>
-            <span>国内</span> 
-            <div class="btns pull-right">
-              <el-button round type="danger" size="mini">编辑</el-button>
-              <el-button round type="success" size="mini">添加子级</el-button>
-              <el-button round size="mini">删除</el-button>
-            </div>
-          </h4>
-          <ul>
-            <li>
-              <span>国际</span>
-              <div class="btns pull-right">
-                <el-button round type="danger" size="mini">编辑</el-button>
-                <el-button round size="mini">删除</el-button>
-              </div>
-            </li>
-             <li>
-              <span>国际</span>
-              <div class="btns pull-right">
-                <el-button round type="danger" size="mini">编辑</el-button>
-                <el-button round size="mini">删除</el-button>
-              </div>
-            </li>
-             <li>
-              <span>国际</span>
-              <div class="btns pull-right">
-                <el-button round type="danger" size="mini">编辑</el-button>
-                <el-button round size="mini">删除</el-button>
-              </div>
-            </li>
-             <li>
-              <span>国际</span>
-              <div class="btns pull-right">
-                <el-button round type="danger" size="mini">编辑</el-button>
-                <el-button round size="mini">删除</el-button>
-              </div>
-            </li>
-          </ul>
+          </ul> -->
         </div>
       </el-col>
       <el-col :span="16">
@@ -106,12 +65,16 @@
 
 <script>
 import { reactive, ref, isRef, toRefs, onMounted, computed } from "@vue/composition-api";
-import { AddParent } from '@/api/news.js'
+import { AddParent, GetCategory, EditCategory, DeleteCategory } from '@/api/news.js'
 import SvgIcon from '../../icons/SvgIcon.vue';
 export default {
   components: { SvgIcon },
   name: "infoCate",
-  setup(){
+  setup(props, { root }){
+    // 页面DOM元素挂载完成时触发
+    onMounted(() => {
+      getCategory();
+    });
     const submit_button_type = ref("");
     const disabled_first = ref(true);
     const disabled_second = ref(true);
@@ -122,6 +85,10 @@ export default {
     const form = reactive({
       firstName: "",
       secondName: "",
+    });
+    const cateList = reactive({
+      data: [], // 分类数据
+      currentItem: '', // 当前分类信息
     });
     
     // -------------------------------------------------
@@ -146,6 +113,10 @@ export default {
       disabled_first.value = false;
       disabled_second.value = true;
       disabled_botton.value = false;
+      // 回填一级分类
+      form.firstName = data.item.category_name;
+      // 存储id
+      cateList.currentItem = data.item;
     };
     // 编辑子级
     const handleEditChildren = (data) => {
@@ -153,20 +124,65 @@ export default {
       disabled_first.value = true;
       disabled_second.value = false;
       disabled_botton.value = false;
-
     };
     // 删除一级分类
-    const handleDeleteFirst = () => {
-      console.log('删除一级分类...');
-    }
+    const handleDeleteFirst = (item, index) => {
+      DeleteCategory({ categoryId: item.id }).then(response => {
+        console.log(response);
+        if(response.data.resCode == 0){
+          root.$message.success(response.data.message);
+          // 删除当前分类信息
+          cateList.data.splice(index, 1);
+        }
+
+      })
+    };
+    // 获取信息分类（有子级分类）
+    const getCategory = () => {
+      GetCategory().then(response => {
+        cateList.data = response.data.data;
+        console.log(cateList.data);
+      })
+    };
+    // 确定 按钮
     const handleConfrim = () => {
-      if(submit_button_type.value == "cate_first_add"){ console.log("cate_first_add..."); };
-      if(submit_button_type.value == "cate_children_add"){ console.log("cate_children_add..."); };
-      if(submit_button_type.value == "cate_first_edit"){ console.log("cate_first_edit..."); };
-      // AddParent({ categoryName: form.firstName }).then(res=>{
-      //   console.log(res)
-      // })
-    }
+      if(submit_button_type.value == "cate_first_add"){ addFirstCate(); /* add first */ };
+      if(submit_button_type.value == "cate_children_add"){ addChildren(); /* add children */ };
+      if(submit_button_type.value == "cate_first_edit"){ editFirst(); /* edit first */ };
+    };
+    // add first
+    const addFirstCate = () => {
+      loading.value = true; // 开启加载中
+      AddParent({ categoryName: form.firstName }).then(res => {
+        if(res.data.resCode == 0){ // 添加成功的回调
+          root.$message.success("添加一级分类成功！");
+          loading.value = false; // 关闭加载中
+          form.firstName = ""; // 置空输入框数据
+          form.secondName = "";
+          cateList.data.push(res.data.data); // 向cateList分类信息数组末尾添加新增返回的数据
+        }
+      }).catch(err => {
+        loading.value = false; // 关闭加载中
+      })
+    };
+    //  add children
+    const addChildren = () => {};
+    //  edit first
+    const editFirst = () => {
+      let responseData = {
+        categoryName: form.firstName,
+        id: cateList.currentItem.id,
+      }
+      EditCategory(responseData).then(response => {
+        console.log(response);
+        if(response.data.resCode == 0){
+          root.$message.success(response.data.message);
+          // 清空数据
+          form.firstName = "";
+          form.secondName = "";
+        }
+      })
+    };
     return{
       // value
       submit_button_type,
@@ -175,6 +191,7 @@ export default {
       disabled_botton,
       loading,
       form,
+      cateList,
       // methods
       handleAddFirst,
       handleAddChildren,
@@ -182,6 +199,8 @@ export default {
       handleEditChildren,
       handleDeleteFirst,
       handleConfrim,
+      addFirstCate,
+
     }
   }
 };

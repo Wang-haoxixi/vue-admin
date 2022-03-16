@@ -66,7 +66,8 @@ module.exports = {
     proxy: { // string | Object  // 设置代理
       '/api': {
         /* 目标代理服务器地址 */
-        target: 'http://old.web-jshtml.cn/productapi/token',
+        // target: 'http://old.web-jshtml.cn/productapi/token', // api服务器地址
+        target: 'http://old.web-jshtml.cn/vue_admin_api/token', // api服务器地址
         /* 允许跨域 */
         changeOrigin: true,
         pathRewrite: {

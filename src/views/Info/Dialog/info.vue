@@ -2,7 +2,7 @@
   <div>
     <el-dialog title="新增" :visible.sync="dialog_info_flag" @close="close" width="576px">
       <el-form ref="form" :model="form" label-width="60px" >
-        <el-form-item label="类型：">
+        <el-form-item label="类别：">
           <el-select v-model="form.type" placeholder="请选择">
             <el-option label="区域一" value="shanghai"></el-option>
             <el-option label="区域二" value="beijing"></el-option>
