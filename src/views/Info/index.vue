@@ -53,7 +53,7 @@
       </el-form-item>
     </el-form>
 
-    <el-table :data="infoTableData.data" v-loading="loading" border style="width: 100%">
+    <el-table :data="infoTableData.data" v-loading="loading" @selection-change="selectionChange" border style="width: 100%">
       <el-table-column type="selection"> </el-table-column>
       <el-table-column prop="title" label="标题"> </el-table-column>
       <el-table-column prop="categoryId" label="类别" :formatter="categoryFormatter"> </el-table-column>
@@ -102,6 +102,8 @@ export default {
       getList();
       
     });
+    // 删除信息的id
+    const deleteInfoId = ref("");
     // 表格遮罩层
     const loading = ref(false);
     // 当前页
@@ -162,6 +164,7 @@ export default {
     // 删除当前信息
     const delCurrent = ({ id }) => {
       console.log(id)
+      deleteInfoId.value = [id];
       root.confirm({
         content: "确认删除此信息？",
         tip: "警告",
@@ -172,6 +175,9 @@ export default {
     }
     // 删除所选信息
     const delSelected = () => {
+      if(!deleteInfoId.value && deleteInfoId.value.length == 0){
+        return root.$message.error("请选择要删除的信息");
+      };
       root.confirm({
         content: "确认删除所选信息？",
         tip: "",
@@ -181,13 +187,21 @@ export default {
     }
     // 调用删除接口
     const callDel = () => {
-      deleteInfo().then(res => {
-
+      deleteInfo({ id: deleteInfoId.value }).then(res => {
+        if(res.data.resCode == 0){
+          root.$message.success("删除成功");
+          getList();
+        }
       })
     };
     // 调用批量删除接口
     const callSelectedDel = () => {
-      console.log("调用批量删除接口..")
+      deleteInfo({ id: deleteInfoId.value }).then(res => {
+        if(res.data.resCode == 0){
+          root.$message.success("删除成功");
+          getList();
+        }
+      })
     };
     // 信息列表
     const getList = () => {
@@ -224,6 +238,13 @@ export default {
     const dateFormatter = (data) => { // 格式化日期
       return formatterTime(data.createDate);
     }
+    // 当选择项发生变化时会触发该事件
+    const selectionChange = (val) => {
+      let ids = val.map(item => { // 过滤出id
+        return item.id
+      });
+      deleteInfoId.value = ids;
+    }
     return {
       loading,
       currentPage,
@@ -243,6 +264,7 @@ export default {
       getList,
       categoryFormatter,
       dateFormatter,
+      selectionChange,
     };
   },
 };
