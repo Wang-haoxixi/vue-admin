@@ -10,11 +10,7 @@ export default {
         type: params.type,
         center: true
       }).then(() => {
-        // Message.success({
-        //   type: 'success',
-        //   message: '删除成功!'
-        // });
-        params.fn || params.fn();
+        params.fn && params.fn();
       }).catch(() => {
         Message({
           type: 'info',

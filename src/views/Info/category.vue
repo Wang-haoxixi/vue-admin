@@ -139,9 +139,9 @@ export default {
     };
     // 获取信息分类（有子级分类）
     const getCategory = () => {
-      GetCategory().then(response => {
-        cateList.data = response.data.data;
-        console.log(cateList.data);
+      // 调用vuex中的获取分类数据方法
+      root.$store.dispatch("common/getInfoCate").then(response => {
+        cateList.data = response;
       })
     };
     // 确定 按钮

@@ -55,3 +55,12 @@ export function Add(data) {
         data,
     })
 }
+
+// 删除信息
+export function deleteInfo(data) {
+    return service.request({
+        method: "post",
+        url: "/news/deleteInfo/",
+        data,
+    })
+}

@@ -16,7 +16,7 @@ router.beforeEach((to, from, next) => {
      * 1、to == /console
      * 2、tp == /index
     */
-    console.log('存在tk')
+    // console.log('存在tk')
     if (to.path === "/login") {
       // 若用户直接退出到登录页，则清除token，再次进入控制台需要重新登录
       removeToken();
@@ -28,7 +28,7 @@ router.beforeEach((to, from, next) => {
       next();//放行进入到index控制台页面 直接放行当前的to.path，不会再进入beforeEach循环中
     }
   } else {
-    console.log('不存在tk')
+    // console.log('不存在tk')
     if (whiteRoute.indexOf(to.path) === -1) {
       next('login') // 路由指向
     } else {
@@ -36,6 +36,6 @@ router.beforeEach((to, from, next) => {
     }
     next()//放行
   }
-  console.log(to)//进入下一个页面
-  console.log(from)//离开之前的页面（上一个）
+  // console.log(to)//进入下一个页面
+  // console.log(from)//离开之前的页面（上一个）
 })

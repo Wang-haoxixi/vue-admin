@@ -8,10 +8,10 @@
           class="select-cate"
         >
           <el-option
-            v-for="item in cateOption"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"
+            v-for="item in cateOption.cateOption"
+            :key="item.id"
+            :label="item.category_name"
+            :value="item.id"
           ></el-option>
         </el-select>
       </el-form-item>
@@ -53,17 +53,17 @@
       </el-form-item>
     </el-form>
 
-    <el-table :data="infoTableData" border style="width: 100%">
+    <el-table :data="infoTableData.data" v-loading="loading" border style="width: 100%">
       <el-table-column type="selection"> </el-table-column>
       <el-table-column prop="title" label="标题"> </el-table-column>
-      <el-table-column prop="cate" label="类别"> </el-table-column>
-      <el-table-column prop="date" label="日期"> </el-table-column>
-      <el-table-column prop="admin" label="管理人"> </el-table-column>
+      <el-table-column prop="categoryId" label="类别" :formatter="categoryFormatter"> </el-table-column>
+      <el-table-column prop="createDate" label="日期" :formatter="dateFormatter"> </el-table-column>
+      <el-table-column prop="admin" label="管理人"><template>管理员</template></el-table-column>
       <el-table-column label="操作" width="250px">
-        <template>
+        <template slot-scope="scope">
           <el-button size="mini" type="success">编辑</el-button>
           <el-button size="mini" type="success">编辑详情</el-button>
-          <el-button size="mini" type="danger" @click="delCurrent">删除</el-button>
+          <el-button size="mini" type="danger" @click="delCurrent(scope.row)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -82,14 +82,15 @@
       </el-pagination>
     </div>
     <!-- <DialogInfo :flag.sync="dialogInfo" @close="closeDialog" /> -->
-    <DialogInfo :flag.sync="dialogInfo" />
+    <DialogInfo :flag.sync="dialogInfo" :infoCate="cateOption.cateOption" @addInfoFn="getList" />
   </div>
 </template>
 
 <script>
 import DialogInfo from "./Dialog/info.vue";
 import { reactive, ref, onMounted} from "@vue/composition-api";
-import { GetList } from "@/api/news.js"
+import { GetList, deleteInfo } from "@/api/news.js"
+import { formatterTime } from "@/utils/common"
 export default {
   name: "info",
   components: {
@@ -97,8 +98,12 @@ export default {
   },
   setup(props, { root }) {
     onMounted(() => {
+      getInfoCate();
       getList();
+      
     });
+    // 表格遮罩层
+    const loading = ref(false);
     // 当前页
     const currentPage = ref(1);
     // 总数
@@ -109,26 +114,15 @@ export default {
     const dialogInfo = ref(false);
     // 顶部搜索表单数据
     const formData = reactive({
-      cate: 1, // 类别
+      cate: "", // 类别
       date: "", // 日期
       keyword: 1, // 关键字
       searchName: "", // 搜索名
     });
     // 类别选项
-    const cateOption = reactive([
-      {
-        value: 1,
-        label: "国际信息",
-      },
-      {
-        value: 2,
-        label: "国内信息",
-      },
-      {
-        value: 3,
-        label: "社会信息",
-      },
-    ]);
+    const cateOption = reactive({
+      cateOption:[],
+    });
     // 关键字选项
     const keywordOption = reactive([
       {
@@ -141,48 +135,21 @@ export default {
       },
     ]);
     // 表格数据
-    const infoTableData = reactive([
-      {
-        title: "师者为师亦为范 习近平这样关心“筑梦人”",
-        cate: "国内信息",
-        date: "2019-09-10 19:31:31",
-        admin: "管理员",
-      },
-      {
-        title: "师者为师亦为范 习近平这样关心“筑梦人”",
-        cate: "国内信息",
-        date: "2019-09-10 19:31:31",
-        admin: "管理员",
-      },
-      {
-        title: "师者为师亦为范 习近平这样关心“筑梦人”",
-        cate: "国内信息",
-        date: "2019-09-10 19:31:31",
-        admin: "管理员",
-      },
-      {
-        title: "师者为师亦为范 习近平这样关心“筑梦人”",
-        cate: "国内信息",
-        date: "2019-09-10 19:31:31",
-        admin: "管理员",
-      },
-      {
-        title: "师者为师亦为范 习近平这样关心“筑梦人”",
-        cate: "国内信息",
-        date: "2019-09-10 19:31:31",
-        admin: "管理员",
-      },
-    ]);
+    const infoTableData = reactive({
+      data: [],
+    });
 
     // -------------------------------------------------------
 
     // 切换页数
     const handleSizeChange = (val) => {
-      console.log(`每页 ${val} 条`);
+      pageSize.value = val;
+      getList();
     };
     // 切换页面
     const handleCurrentChange = (val) => {
-      console.log(`当前页: ${val}`);
+      currentPage.value = val;
+      getList();
     };
     // 添加按钮 控制弹窗显隐
     const handleAdd = () => {
@@ -193,7 +160,8 @@ export default {
     //   dialogInfo.value = false;
     // };
     // 删除当前信息
-    const delCurrent = () => {
+    const delCurrent = ({ id }) => {
+      console.log(id)
       root.confirm({
         content: "确认删除此信息？",
         tip: "警告",
@@ -213,7 +181,9 @@ export default {
     }
     // 调用删除接口
     const callDel = () => {
-      console.log("调用删除接口..")
+      deleteInfo().then(res => {
+
+      })
     };
     // 调用批量删除接口
     const callSelectedDel = () => {
@@ -221,17 +191,41 @@ export default {
     };
     // 信息列表
     const getList = () => {
+      loading.value = true;
       let requestData = {
         // categoryId: 1,
         // title: "vue3",
-        pageNumber: 1,
-        pageSize: 10
+        pageNumber: currentPage.value,
+        pageSize: pageSize.value,
       }
       GetList(requestData).then(response => {
         console.log(response)
+        infoTableData.data = response.data.data.data;
+        total.value = response.data.data.total;
+        loading.value = false;
+      }).catch(error => {
+        loading.value = false;
       })
     };
+    const getInfoCate = () => {
+      root.$store.dispatch("common/getInfoCate").then(response => {
+        cateOption.cateOption = response
+      })
+    };
+    const categoryFormatter = (data) => { // 格式化分类
+      let cateName = "";
+      cateOption.cateOption.forEach(item => {
+        if(item.id == data.categoryId){
+          cateName = item.category_name;
+        }
+      });
+      return cateName;
+    }
+    const dateFormatter = (data) => { // 格式化日期
+      return formatterTime(data.createDate);
+    }
     return {
+      loading,
       currentPage,
       total,
       pageSize,
@@ -246,7 +240,9 @@ export default {
       // closeDialog,
       delCurrent,
       delSelected,
-
+      getList,
+      categoryFormatter,
+      dateFormatter,
     };
   },
 };
