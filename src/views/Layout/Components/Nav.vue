@@ -20,12 +20,14 @@
             <span slot="title">{{ item.meta.name }}</span>
           </template>
           <!-- 子级菜单 -->
-          <el-menu-item
-            v-for="(subItem, subIndex) in item.children"
-            :key="subIndex"
-            :index="subItem.path"
-            >{{ subItem.meta.name }}</el-menu-item
-          >
+          <template v-for="(subItem, subIndex) in item.children">
+            <el-menu-item
+              v-if="!subItem.hide"
+              :key="subIndex"
+              :index="subItem.path"
+              >{{ subItem.meta.name }}</el-menu-item
+            >
+          </template>
         </el-submenu>
       </template>
     </el-menu>

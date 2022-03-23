@@ -64,7 +64,7 @@
       <el-table-column label="操作" width="250px">
         <template slot-scope="scope">
           <el-button size="mini" type="success" @click="edit(scope.row.id)">编辑</el-button>
-          <el-button size="mini" type="success">编辑详情</el-button>
+          <el-button size="mini" type="success" @click="editInfo(scope.row)">编辑详情</el-button>
           <el-button size="mini" type="danger" @click="delCurrent(scope.row)">删除</el-button>
         </template>
       </el-table-column>
@@ -271,10 +271,23 @@ export default {
       });
       deleteInfoId.value = ids;
     };
+    // 编辑
     const edit = (id) => {
       dialogInfoEdit.value = true;
       infoId.value = id;
     };
+    // 编辑详情
+    const editInfo = (data) => {
+      root.$store.commit("infoDetails/SET_ID", data.id);
+      root.$store.commit("infoDetails/SET_TITLE", data.title);
+      root.$router.push({
+        name: "Details",
+        params: {
+          id: data.id,
+          title: data.title,
+        }
+      })
+    }
     return {
       infoId,
       loading,
@@ -299,6 +312,7 @@ export default {
       selectionChange,
       search,
       edit,
+      editInfo,
     };
   },
 };
