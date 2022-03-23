@@ -12,6 +12,15 @@ export function AddParent(data) {
     })
 }
 
+// 添加子级
+export function AddChildrenCategory(data) {
+    return service.request({
+        method: 'post',
+        url: '/news/addChildrenCategory/',
+        data,
+    })
+}
+
 // 获取信息分类（有子级分类）
 export function GetCategory() {
     return service.request({
@@ -61,6 +70,15 @@ export function deleteInfo(data) {
     return service.request({
         method: "post",
         url: "/news/deleteInfo/",
+        data,
+    })
+}
+
+// 修改信息
+export function EditInfo(data) {
+    return service.request({
+        method: "post",
+        url: "/news/editInfo/",
         data,
     })
 }

@@ -23,6 +23,8 @@
           start-placeholder="开始日期"
           end-placeholder="结束日期"
           class="date-picker"
+          format="yyyy 年 MM 月 dd 日"
+          value-format="yyyy-MM-dd HH:mm:ss"
         >
         </el-date-picker>
       </el-form-item>
@@ -44,7 +46,7 @@
         <el-input v-model="formData.searchName"></el-input>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" class="search-btn">搜索</el-button>
+        <el-button type="primary" class="search-btn" @click="search">搜索</el-button>
       </el-form-item>
       <el-form-item>
         <el-button type="primary" class="search-btn" @click="handleAdd"
@@ -61,7 +63,7 @@
       <el-table-column prop="admin" label="管理人"><template>管理员</template></el-table-column>
       <el-table-column label="操作" width="250px">
         <template slot-scope="scope">
-          <el-button size="mini" type="success">编辑</el-button>
+          <el-button size="mini" type="success" @click="edit(scope.row.id)">编辑</el-button>
           <el-button size="mini" type="success">编辑详情</el-button>
           <el-button size="mini" type="danger" @click="delCurrent(scope.row)">删除</el-button>
         </template>
@@ -82,12 +84,16 @@
       </el-pagination>
     </div>
     <!-- <DialogInfo :flag.sync="dialogInfo" @close="closeDialog" /> -->
+    <!-- 新增 -->
     <DialogInfo :flag.sync="dialogInfo" :infoCate="cateOption.cateOption" @addInfoFn="getList" />
+    <!-- 编辑 -->
+    <DialogInfoEdit :flag.sync="dialogInfoEdit" :infoId="infoId" :infoCate="cateOption.cateOption" @addInfoFn="getList" />
   </div>
 </template>
 
 <script>
 import DialogInfo from "./Dialog/info.vue";
+import DialogInfoEdit from "./Dialog/infoEdit.vue";
 import { reactive, ref, onMounted} from "@vue/composition-api";
 import { GetList, deleteInfo } from "@/api/news.js"
 import { formatterTime } from "@/utils/common"
@@ -95,6 +101,7 @@ export default {
   name: "info",
   components: {
     DialogInfo,
+    DialogInfoEdit,
   },
   setup(props, { root }) {
     onMounted(() => {
@@ -102,6 +109,8 @@ export default {
       getList();
       
     });
+    // 编辑Id
+    const infoId = ref("");
     // 删除信息的id
     const deleteInfoId = ref("");
     // 表格遮罩层
@@ -114,11 +123,12 @@ export default {
     const pageSize = ref(10);
     // 添加信息dialog
     const dialogInfo = ref(false);
+    const dialogInfoEdit = ref(false);
     // 顶部搜索表单数据
     const formData = reactive({
       cate: "", // 类别
       date: "", // 日期
-      keyword: 1, // 关键字
+      keyword: "id", // 关键字
       searchName: "", // 搜索名
     });
     // 类别选项
@@ -128,11 +138,11 @@ export default {
     // 关键字选项
     const keywordOption = reactive([
       {
-        value: 1,
+        value: "id",
         label: "ID",
       },
       {
-        value: 2,
+        value: "title",
         label: "标题",
       },
     ]);
@@ -203,17 +213,33 @@ export default {
         }
       })
     };
-    // 信息列表
-    const getList = () => {
-      loading.value = true;
-      let requestData = {
-        // categoryId: 1,
-        // title: "vue3",
+    // 搜索
+    const search = () => {
+      getList();
+    };
+    // 处理搜索请求数据
+    const formatData = () => {
+      let reqData = {
         pageNumber: currentPage.value,
         pageSize: pageSize.value,
+      };
+      if(formData.cate){
+        reqData.categoryId = formData.cate;
+      };
+      if(formData.date && formData.date.length > 0){
+        reqData.startTime = formData.date[0];
+        reqData.endTime = formData.date[1];
       }
-      GetList(requestData).then(response => {
-        console.log(response)
+      if(formData.searchName){
+        reqData[formData.keyword] = formData.searchName;
+      }
+      return reqData;
+    };
+    // 信息列表
+    const getList = () => {
+      let reqData = formatData();
+      loading.value = true;
+      GetList(reqData).then(response => {
         infoTableData.data = response.data.data.data;
         total.value = response.data.data.total;
         loading.value = false;
@@ -237,15 +263,20 @@ export default {
     }
     const dateFormatter = (data) => { // 格式化日期
       return formatterTime(data.createDate);
-    }
+    };
     // 当选择项发生变化时会触发该事件
     const selectionChange = (val) => {
       let ids = val.map(item => { // 过滤出id
         return item.id
       });
       deleteInfoId.value = ids;
-    }
+    };
+    const edit = (id) => {
+      dialogInfoEdit.value = true;
+      infoId.value = id;
+    };
     return {
+      infoId,
       loading,
       currentPage,
       total,
@@ -255,6 +286,7 @@ export default {
       keywordOption,
       infoTableData,
       dialogInfo,
+      dialogInfoEdit,
       handleSizeChange,
       handleCurrentChange,
       handleAdd,
@@ -265,6 +297,8 @@ export default {
       categoryFormatter,
       dateFormatter,
       selectionChange,
+      search,
+      edit,
     };
   },
 };

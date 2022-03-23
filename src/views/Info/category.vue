@@ -9,40 +9,19 @@
             <span>{{ item.category_name }}</span> 
             <div class="btns pull-right">
               <el-button round type="danger" size="mini" @click="handleEditFirst({ type: 'cate_first_edit', item, })">编辑</el-button>
-              <el-button round type="success" size="mini" @click="handleAddChildren({ type: 'cate_children_add' })">添加子级</el-button>
+              <el-button round type="success" size="mini" @click="handleAddChildren({ type: 'cate_children_add', item })">添加子级</el-button>
               <el-button round size="mini" @click="handleDeleteFirst(item, index)">删除</el-button>
             </div>
           </h4>
-          <!-- <ul>
-            <li>
-              <span>国际</span>
+          <ul>
+            <li v-for="(ele, ix) in item.children" :key="ix">
+              <span>{{ ele.category_name }}</span>
               <div class="btns pull-right">
-                <el-button round type="danger" size="mini" @click="handleEditChildren({ type: 'cate_children_edit' })">编辑</el-button>
+                <el-button round type="danger" size="mini" @click="handleEditChildren({ type: 'cate_children_edit', item })">编辑</el-button>
                 <el-button round size="mini">删除</el-button>
               </div>
             </li>
-             <li>
-              <span>国际</span>
-              <div class="btns pull-right">
-                <el-button round type="danger" size="mini">编辑</el-button>
-                <el-button round size="mini">删除</el-button>
-              </div>
-            </li>
-             <li>
-              <span>国际</span>
-              <div class="btns pull-right">
-                <el-button round type="danger" size="mini">编辑</el-button>
-                <el-button round size="mini">删除</el-button>
-              </div>
-            </li>
-             <li>
-              <span>国际</span>
-              <div class="btns pull-right">
-                <el-button round type="danger" size="mini">编辑</el-button>
-                <el-button round size="mini">删除</el-button>
-              </div>
-            </li>
-          </ul> -->
+          </ul>
         </div>
       </el-col>
       <el-col :span="16">
@@ -65,7 +44,7 @@
 
 <script>
 import { reactive, ref, isRef, toRefs, onMounted, computed } from "@vue/composition-api";
-import { AddParent, GetCategory, EditCategory, DeleteCategory } from '@/api/news.js'
+import { AddParent, GetCategory, EditCategory, DeleteCategory, AddChildrenCategory } from '@/api/news.js'
 import SvgIcon from '../../icons/SvgIcon.vue';
 export default {
   components: { SvgIcon },
@@ -102,6 +81,8 @@ export default {
     };
     // 添加子级
     const handleAddChildren = (data) => {
+      cateList.currentItem = data.item;
+      form.firstName = data.item.category_name // 显示一级
       submit_button_type.value = data.type;
       disabled_first.value = true;
       disabled_second.value = false;
@@ -115,11 +96,12 @@ export default {
       disabled_botton.value = false;
       // 回填一级分类
       form.firstName = data.item.category_name;
-      // 存储id
+      // 存储当前值
       cateList.currentItem = data.item;
     };
     // 编辑子级
     const handleEditChildren = (data) => {
+      form.firstName = data.item.category_name // 显示一级
       submit_button_type.value = data.type;
       disabled_first.value = true;
       disabled_second.value = false;
@@ -166,7 +148,21 @@ export default {
       })
     };
     //  add children
-    const addChildren = () => {};
+    const addChildren = () => {
+    //   "categoryName":"智能家居",
+    // "parentId":"243"
+      let reqData = {
+        categoryName: form.secondName,
+        parentId: cateList.currentItem.id,
+      }
+      AddChildrenCategory(reqData).then(res => {
+        console.log(res);
+        if(res.data.resCode == 0){
+          root.$message.success(res.data.message);
+          getCategory();
+        }
+      })
+    };
     //  edit first
     const editFirst = () => {
       let responseData = {
