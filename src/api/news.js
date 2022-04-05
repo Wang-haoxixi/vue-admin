@@ -82,3 +82,12 @@ export function EditInfo(data) {
         data,
     })
 }
+
+// 获取信息
+// export function GetNewInfo(params) {
+//     return service.request({
+//         method: "get",
+//         url: "/news/detailed/",
+//         params,
+//     })
+// }

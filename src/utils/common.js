@@ -1,3 +1,5 @@
+
+
 // 时间戳转换为YYYY-MM-dd HH:mm:ss
 export function formatterTime(timestamp) {
   var timestamp = new Date(timestamp * 1000);
@@ -12,3 +14,4 @@ export function formatterTime(timestamp) {
     + minute.substring(minute.length - 2, minute.length) + ":"
     + second.substring(second.length - 2, second.length);
 }
+
