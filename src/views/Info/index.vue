@@ -94,7 +94,7 @@
 <script>
 import DialogInfo from "./Dialog/info.vue";
 import DialogInfoEdit from "./Dialog/infoEdit.vue";
-import { reactive, ref, onMounted} from "@vue/composition-api";
+import { reactive, ref, onMounted } from "@vue/composition-api";
 import { GetList, deleteInfo } from "@/api/news.js"
 import { formatterTime } from "@/utils/common"
 export default {

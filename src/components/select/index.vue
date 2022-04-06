@@ -1,0 +1,58 @@
+<template>
+    <div>
+        <el-select v-model="data.selectValue" placeholder="请输入" style="width:150px">
+            <el-option v-for="(item, index) in data.initOption" :key="index" :label="item.label" :value="item.value"></el-option>
+        </el-select>
+    </div>
+</template>
+
+<script>
+import { reactive, ref, onMounted } from "@vue/composition-api";
+export default {
+    name: "",
+    props: {
+        config: {
+            type: Array,
+            default: () => {
+                return [];
+            }
+        }
+    },
+    setup (props, { root }) {
+        const data = reactive({
+            selectValue: "",//下拉选中值
+            initOption: [],// 初始化下拉选项
+            options: [ // 预置下拉选项值
+                { label: "姓名", value: "name" },
+                { label: "手机号", value: "phone" },
+                { label: "邮箱", value: "email" },
+            ]
+        });
+        // -----------------------------------------------------------------
+        // 初始化下拉选项
+        const initOption = () => {
+            let arr = [];
+            props.config.forEach(element => {
+                let item = data.options.filter((item) => { // 过滤出与传进组件的值一致的下拉数据
+                    return item.value === element;
+                })[0];
+                arr.push(item);
+            });
+            // 初始化下拉选项值
+            data.initOption = arr;
+        };
+        onMounted(() => {
+            initOption()
+        })
+
+        return {
+            data,
+            initOption
+        }
+    }
+}
+</script>
+
+<style lang="scss" scoped>
+
+</style>
