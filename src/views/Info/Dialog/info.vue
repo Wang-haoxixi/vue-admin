@@ -86,7 +86,6 @@ export default {
 
     // 侦听父组件传进来flag的变化，若变化了，给dialog_info_flag重新赋值
     watch(() => props.flag,(newVal, oldVal) => {
-      console.log("新值：", newVal, "，旧值：", oldVal);
       dialog_info_flag.value = newVal;
     });
 

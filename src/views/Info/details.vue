@@ -10,16 +10,7 @@
                 <el-input v-model="form.title" placeholder="请输入" style="width:370px"></el-input>
             </el-form-item>
             <el-form-item label="缩略图：">
-                <el-upload
-                    class="avatar-uploader"
-                    action="http://up-z2.qiniup.com"
-                    :data="uploadKey"
-                    :show-file-list="false"
-                    :on-success="handleAvatarSuccess"
-                    :before-upload="beforeAvatarUpload">
-                    <img v-if="form.imgUrl" :src="form.imgUrl" class="avatar">
-                    <i v-else class="el-icon-plus avatar-uploader-icon"></i>
-                </el-upload>
+                <UploadImg :imgUrlProp.sync="form.imgUrl" :uploadConfig="uploadConfig" />
             </el-form-item>
             <el-form-item label="发布日期：">
                 <el-date-picker
@@ -43,7 +34,7 @@
 import { reactive, ref, onMounted} from "@vue/composition-api";
 import { GetList, EditInfo } from "@/api/news.js";
 import { formatterTime } from "@/utils/common"
-import { QiniuToken } from "@/api/common.js";
+import UploadImg from "@/components/UploadImg";
 
 // 局部引入富文本编辑器
 import 'quill/dist/quill.core.css'
@@ -54,7 +45,8 @@ import { quillEditor } from 'vue-quill-editor'
 export default {
     name: "Details",
     components: {
-        quillEditor
+        quillEditor,
+        UploadImg,
     },
     setup(props, { root }){
         onMounted(() => {
@@ -62,7 +54,6 @@ export default {
             title.value = root.$store.getters["infoDetails/infoTitle"];
             getCategory();
             getNewInfo();
-            getQiniuToken();
         });
         const id = ref("");
         const title = ref("");
@@ -75,11 +66,13 @@ export default {
         const editorOption = reactive({
             placeholder: "请输入文章内容",
         });
-        // 七牛云token （七牛云上传图片到服务器时需要携带token，否则会报错token not specified令牌未指定）
-        const uploadKey = reactive({
-            token: "",
-            key: "",
-        });
+        // 上传图片的配置
+        const uploadConfig = reactive({
+            ak:"GHnOuYtiHUliqHtmZRR9AUnTXd005wu-wsBHwHdQ",
+            sk:"ymd_-LMTCdl7wnHwvEMqQ70IE7mnNUvSk632TJ01",
+            buckety:"vue3-admin",
+            action:"http://up-z2.qiniup.com"
+        })
         // 表单内容
         const form = reactive({
             title: "",
@@ -89,24 +82,7 @@ export default {
             imgUrl: "",
         })
         // --------------------------------------------------------------------------------------------------------------------
-        const handleAvatarSuccess = (res, file) => {
-            form.imgUrl = `http://r9a2h1unb.hn-bkt.clouddn.com/${res.key}`;
-        };
-        const beforeAvatarUpload = (file) => {
-            const isJPG = file.type === 'image/jpeg';
-            const isLt2M = file.size / 1024 / 1024 < 2;
-
-            // 文件名转码后再上传到七牛云
-            let suffix = file.name; //文件地址后缀
-            uploadKey.key = encodeURI(`${suffix}`);
-            // if (!isJPG) {
-            //     root.$message.error('上传头像图片只能是 JPG 格式!');
-            // }
-            // if (!isLt2M) {
-            //     root.$message.error('上传头像图片大小不能超过 2MB!');
-            // }
-            // return isJPG && isLt2M;
-        };
+        
         // 保存
         const onSubmit = () => {
             loading.value = true;
@@ -128,16 +104,7 @@ export default {
                 loading.value = false;
             })
         }
-        // 获取七牛云token
-        const getQiniuToken = () => {
-            QiniuToken({
-                "ak":"GHnOuYtiHUliqHtmZRR9AUnTXd005wu-wsBHwHdQ",
-                "sk":"ymd_-LMTCdl7wnHwvEMqQ70IE7mnNUvSk632TJ01",
-                "buckety":"vue3-admin",
-            }).then((response) => {
-                uploadKey.token = response.data.data.token;
-            })
-        };
+        
         // 获取信息详情
         const getNewInfo = () => {
             let reqData = {
@@ -168,42 +135,14 @@ export default {
             form,
             editorOption,
             loading,
-            uploadKey,
+            uploadConfig,
             // --------------------------------------------------------------------------------------------------------------------
             onSubmit,
             getCategory,
-            handleAvatarSuccess,
-            beforeAvatarUpload,
         }
     }
 }
 </script>
 
 <style lang="scss" scoped>
-#infoDetail{
-    ::v-deep .avatar-uploader .el-upload {
-        border: 1px dashed #d9d9d9;
-        border-radius: 6px;
-        cursor: pointer;
-        position: relative;
-        overflow: hidden;
-    }
-    ::v-deep .avatar-uploader .el-upload:hover {
-        border-color: #409EFF;
-    }
-    ::v-deep .avatar-uploader-icon {
-        font-size: 28px;
-        color: #8c939d;
-        width: 178px;
-        height: 178px;
-        line-height: 178px;
-        text-align: center;
-    }
-    ::v-deep .avatar {
-        width: 178px;
-        height: 178px;
-        display: block;
-    }
-}
-
 </style>
