@@ -1,7 +1,9 @@
 <template>
     <div>
         <el-select v-model="data.selectValue" placeholder="请输入" style="width:150px">
-            <el-option v-for="(item, index) in data.initOption" :key="index" :label="item.label" :value="item.value"></el-option>
+            <el-option v-for="(item, index) in data.initOption" :key="index" :label="item.label" :value="item.value">
+
+            </el-option>
         </el-select>
     </div>
 </template>
@@ -12,13 +14,13 @@ export default {
     name: "",
     props: {
         config: {
-            type: Array,
+            type: Object,
             default: () => {
-                return [];
+                return {};
             }
         }
     },
-    setup (props, { root }) {
+    setup(props, { root }) {
         const data = reactive({
             selectValue: "",//下拉选中值
             initOption: [],// 初始化下拉选项
@@ -31,8 +33,9 @@ export default {
         // -----------------------------------------------------------------
         // 初始化下拉选项
         const initOption = () => {
+            let selectOp = props.config.option
             let arr = [];
-            props.config.forEach(element => {
+            selectOp.forEach(element => {
                 let item = data.options.filter((item) => { // 过滤出与传进组件的值一致的下拉数据
                     return item.value === element;
                 })[0];
@@ -54,5 +57,4 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-
 </style>
