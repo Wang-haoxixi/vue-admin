@@ -3,8 +3,16 @@
         <el-table :data="data.tableData" border style="width: 100%">
             <!-- 多选项 -->
             <el-table-column v-if="data.tableConfig.selection" type="selection" width="55"></el-table-column>
-            <!-- 数据渲染 -->
-            <el-table-column v-for="(item, index) in data.tableConfig.tHeaders" :key="index" :prop="item.value" :label="item.label" :width="item.width"></el-table-column>
+            <template v-for="(item, index) in data.tableConfig.tHeaders">
+                <!-- 插槽 -->
+                <el-table-column :key="index" :prop="item.value" :label="item.label" :width="item.width" v-if="item.colType === 'slot'">
+                    <template slot-scope="scope">
+                        <slot :name="item.slotName" :data="scope.row"></slot>
+                    </template>
+                </el-table-column>
+                <!-- 文本数据渲染 -->
+                <el-table-column :key="index" :prop="item.value" :label="item.label" :width="item.width" v-else></el-table-column>
+            </template>
         </el-table>
     </div>
 </template>
@@ -28,14 +36,14 @@ export default {
             tableData: [
                 {
                     email: '409019683@qq.com',
-                    name: '王小虎',
+                    name: '张三',
                     phone: '13588888888',
                     address: '上海市普陀区金沙江路 1518 弄',
                     role: '超级管理员',
                 },
                 {
                     email: '409019683@qq.com',
-                    name: '王小虎',
+                    name: '李四',
                     phone: '13588888888',
                     address: '上海市普陀区金沙江路 1518 弄',
                     role: '超级管理员',

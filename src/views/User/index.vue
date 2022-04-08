@@ -18,7 +18,16 @@
                 <el-button type="danger" class="pull-right">添加用户</el-button>
             </el-col>
         </el-row>
-        <tableComponent :config="data.tableConfig" />
+        <tableComponent :config="data.tableConfig">
+            <template v-slot:status="slotData">
+              {{ slotData.data.name }}
+                <el-switch active-color="#13ce66" inactive-color="#ff4949"></el-switch>
+            </template>
+            <template v-slot:operation="slotData">
+                <el-button size="mini" type="danger" @click="handleDelete(slotData.data)">删除</el-button>
+                <el-button size="mini" type="success" @click="handleEdit(slotData.data)">编辑</el-button>
+            </template>
+        </tableComponent>
     </div>
 </template>
 
@@ -39,35 +48,61 @@ export default {
                 selection: true,
                 tHeaders: [
                     {
-                      label: "邮箱/用户名",
-                      value: "email",
-                      width: 200,
+                        label: "邮箱/用户名",
+                        value: "email",
+                        width: 200,
                     },
                     {
-                      label: "真实姓名",
-                      value: "name",
-                      width: 120,
+                        label: "真实姓名",
+                        value: "name",
+                        width: 120,
                     },
                     {
-                      label: "手机号",
-                      value: "phone",
-                      width: 120,
+                        label: "手机号",
+                        value: "phone",
+                        width: 120,
                     },
                     {
-                      label: "地区",
-                      value: "address",
+                        label: "地区",
+                        value: "address",
                     },
                     {
-                      label: "角色",
-                      value: "role",
-                      width: 150,
+                        label: "角色",
+                        value: "role",
+                        width: 150,
+                    },
+                    {
+                        label: "禁启用状态",
+                        value: "status",
+                        width: 150,
+                        colType: "slot", // 区分当前列的类型：插槽模式
+                        slotName: "status", // 具名插槽名称
+                    },
+                    {
+                        label: "操作",
+                        width: 200,
+                        colType: "slot", // 区分当前列的类型：插槽模式
+                        slotName: "operation", // 具名插槽名称
                     },
                 ],
             },
+
         })
+
+        // -----------------------------------------------------------------
+        // 删除
+        const handleDelete = (data) => {
+            console.log(data);
+        };
+        // 编辑
+        const handleEdit = (data) => {
+            console.log(data);
+        }
 
         return {
             data,
+            handleDelete,
+            handleEdit
         }
     }
 };
