@@ -20,7 +20,7 @@
         </el-row>
         <tableComponent :config="data.tableConfig">
             <template v-slot:status="slotData">
-              {{ slotData.data.name }}
+                {{ slotData.data.name }}
                 <el-switch active-color="#13ce66" inactive-color="#ff4949"></el-switch>
             </template>
             <template v-slot:operation="slotData">
@@ -35,6 +35,7 @@
 import { reactive, ref, onMounted } from "@vue/composition-api";
 import selectComponent from "@/components/select"
 import tableComponent from "@/components/Table"
+import { requestUrl } from "@/api/requestUrl"
 export default {
     name: "userIndex",
     components: { selectComponent, tableComponent },
@@ -85,6 +86,15 @@ export default {
                         slotName: "operation", // 具名插槽名称
                     },
                 ],
+                // 请求接口URL
+                requestData: {
+                    url: requestUrl.getUserUrl,
+                    method: "post",
+                    data: {
+                        pageNumber: 1,
+                        pageSize: 10,
+                    }
+                },
             },
 
         })

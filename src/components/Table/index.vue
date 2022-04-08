@@ -18,7 +18,9 @@
 </template>
 
 <script>
-import { reactive, ref, onMounted, onBeforeMount } from "@vue/composition-api";
+import { reactive, ref, onMounted, onBeforeMount, watch } from "@vue/composition-api";
+import { getTableList } from "@/api/common";
+import { tableLoadData } from "./tableLoadData"
 export default {
     name: "tableComponent",
     props: {
@@ -28,8 +30,11 @@ export default {
         }
     },
     setup(props, { root }) {
+        const { resData, loadData } = tableLoadData();
+
         const data = reactive({
             tableConfig: { // 表格配置
+                requestData: {}, // 请求所需数据
                 selection: false, // 是否显示多选项
                 tHeaders: [], // 表头设置
             },
@@ -54,16 +59,23 @@ export default {
         // 循环遍历赋值
         const initTableConfig = () => {
             let propConfig = props.config;
+            let keys = Object.keys(data.tableConfig); // 获取到所有的key键
             for (let key in propConfig) {
-                data.tableConfig[key] = propConfig[key];
+                if (keys.includes(key)) { // 判断keys集合中是否有传进来的key键，若有就替换值
+                    data.tableConfig[key] = propConfig[key];
+                }
             }
         };
 
         onBeforeMount(() => {
             initTableConfig();
-            data.tableConfig.selection = props.config.selection;
-            data.tableConfig.tHeaders = props.config.tHeaders;
+            loadData(data.tableConfig.requestData);
         })
+
+        // 监听表格数据的变化
+        watch(() => resData.item, newValue => {
+            data.tableData = resData.item; // 表格数据赋值渲染
+        }, { deep: true, immediate: true })
 
         return {
             data,

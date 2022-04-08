@@ -67,7 +67,7 @@ export default {
             // }
             // return isJPG && isLt2M;
         };
-        onMounted, watch(() => {
+        onMounted(() => {
             getQiniuToken();
         });
         // 监听

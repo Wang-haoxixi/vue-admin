@@ -8,3 +8,12 @@ export function QiniuToken(data) {
         data,
     })
 }
+
+// 请求表格数据
+export function getTableList(params) {
+    return service.request({
+        method: params.method || "post",
+        url: params.url,
+        data: params.data || {},
+    })
+}
