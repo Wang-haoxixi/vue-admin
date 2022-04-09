@@ -50,7 +50,7 @@ export default {
                 tHeaders: [
                     {
                         label: "邮箱/用户名",
-                        value: "email",
+                        value: "title",
                         width: 200,
                     },
                     {
@@ -92,9 +92,11 @@ export default {
                     method: "post",
                     data: {
                         pageNumber: 1,
-                        pageSize: 10,
+                        pageSize: 3,
                     }
                 },
+                // 是否显示页码
+                pagination: true,
             },
 
         })
