@@ -17,3 +17,12 @@ export function getTableList(params) {
         data: params.data || {},
     })
 }
+
+// 获取省市区关联
+export function getCityPicker(data) {
+    return service.request({
+        method: "post",
+        url: "/cityPicker/",
+        data
+    })
+}

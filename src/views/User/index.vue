@@ -15,7 +15,7 @@
                 </el-form>
             </el-col>
             <el-col :span="4">
-                <el-button type="danger" class="pull-right">添加用户</el-button>
+                <el-button type="danger" class="pull-right" @click="addUser">添加用户</el-button>
             </el-col>
         </el-row>
         <tableComponent :config="data.tableConfig">
@@ -28,19 +28,23 @@
                 <el-button size="mini" type="success" @click="handleEdit(slotData.data)">编辑</el-button>
             </template>
         </tableComponent>
+
+        <DialogAdd :flag.sync="data.dialogAdd" />
     </div>
 </template>
 
 <script>
+import DialogAdd from "./Dialog/add.vue";
 import { reactive, ref, onMounted } from "@vue/composition-api";
 import selectComponent from "@/components/select"
 import tableComponent from "@/components/Table"
 import { requestUrl } from "@/api/requestUrl"
 export default {
     name: "userIndex",
-    components: { selectComponent, tableComponent },
+    components: { selectComponent, tableComponent, DialogAdd },
     setup(props, { root }) {
         const data = reactive({
+            dialogAdd: false,
             selectOptions: {
                 option: ["name", "phone", "email",],
                 aa: "aaaaaaa",
@@ -102,6 +106,10 @@ export default {
         })
 
         // -----------------------------------------------------------------
+        // 添加用户按钮
+        const addUser = () => {
+          data.dialogAdd = true;
+        };
         // 删除
         const handleDelete = (data) => {
             console.log(data);
@@ -113,6 +121,7 @@ export default {
 
         return {
             data,
+            addUser,
             handleDelete,
             handleEdit
         }
