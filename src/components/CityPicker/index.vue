@@ -90,7 +90,7 @@ export default {
             () => resData.streetValue,
         ], ([provinceValue, cityValue, areaValue, streetValue]) => {
             emit("getRegionFn", resData);
-        })
+        }, { deep: true, immediate: true})
 
 
 

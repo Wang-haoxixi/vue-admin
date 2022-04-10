@@ -2,29 +2,31 @@
     <div>
         <el-dialog title="新增" :visible.sync="dialog_info_flag" @close="close" width="576px" @opened="dialogOpened">
             <el-form ref="form" :model="form" label-width="90px">
-                <el-form-item label="用户名：">
-                    <el-input placeholder="请输入内容"></el-input>
+                <el-form-item label="用户名：" prop="username">
+                    <el-input v-model="form.username" placeholder="请输入邮箱"></el-input>
                 </el-form-item>
-                <el-form-item label="姓名：">
-                    <el-input placeholder="请输入内容"></el-input>
+                <el-form-item label="姓名：" prop="truename">
+                    <el-input v-model="form.truename" placeholder="请输入姓名"></el-input>
                 </el-form-item>
-                <el-form-item label="手机号：">
-                    <el-input placeholder="请输入内容"></el-input>
+                <el-form-item label="密码：" prop="password">
+                    <el-input v-model="form.password" placeholder="请输入密码"></el-input>
                 </el-form-item>
-                <el-form-item label="地区：">
+                <el-form-item label="手机号：" prop="phone">
+                    <el-input v-model.number="form.phone" placeholder="请输入手机号"></el-input>
+                </el-form-item>
+                <el-form-item label="地区：" prop="region">
                     <!-- region: 绑定的数据; getRegionFn: 返回数据的函数; level: 配置省市区街显隐 -->
                     <!-- <cityPicker :level="['province', 'city', 'area']" :region="regionData.data" @getRegionFn="getRegion" /> -->
                     <cityPicker :region="regionData.data" @getRegionFn="getRegion" />
-                    {{ regionData.data }}
                 </el-form-item>
-                <el-form-item label="是否启用：">
-                    <el-radio-group v-model="status">
+                <el-form-item label="是否启用：" prop="status">
+                    <el-radio-group v-model="form.status">
                         <el-radio :label="1">禁用</el-radio>
                         <el-radio :label="2">启用</el-radio>
                     </el-radio-group>
                 </el-form-item>
-                <el-form-item label="角色：">
-                    <el-checkbox-group v-model="roleCheckList">
+                <el-form-item label="角色：" prop="role">
+                    <el-checkbox-group v-model="form.role">
                         <el-checkbox v-for="(item, index) in roleItem.data" :key="index" :label="item.role">{{ item.name }}</el-checkbox>
                     </el-checkbox-group>
                 </el-form-item>
@@ -40,10 +42,9 @@
 <script>
 import { reactive, ref, watch } from "@vue/composition-api";
 import cityPicker from "@/components/CityPicker"
-import { Add } from "@/api/news.js";
-import { GetRoles } from "@/api/user"
+import { GetRoles, UserAdd } from "@/api/user"
 export default {
-    name: "dialogInfo",
+    name: "dialogAdd",
     components: {
         cityPicker,
     },
@@ -52,35 +53,29 @@ export default {
             type: Boolean,
             default: false,
         },
-        infoCate: {
-            type: Array,
-            default: () => [],
-        }
     },
     setup(props, { root, emit, refs }) {
         const loading = ref(false);
+        const form = reactive({
+            username: "",
+            truename: "",
+            password: "",
+            phone: "",
+            region: "",
+            status: 1,
+            role: [],
+            // btnPerm: "",
+        })
         // 地区数据
         const regionData = reactive({
             data: {}
         });
-        // 是否启用
-        const status = ref(1);
-        // 角色选择
-        const roleCheckList = reactive(["sale"]);
         // 角色项
         const roleItem = reactive({
             data: [],
         });
         // 控制弹框显隐
         const dialog_info_flag = ref(false);
-        const form = reactive({
-            category: "",
-            title: "",
-            content: "",
-        })
-        const options = reactive({
-            cateList: [],
-        });
 
         // dialog弹窗关闭后触发
         const close = () => {
@@ -89,25 +84,24 @@ export default {
         };
 
 
+        // 重置表单
+        const reset = () => {
+            refs.form.resetFields();
+        };
+
         // 确定添加信息
         const submit = () => {
             loading.value = true;
-            let requestData = {
-                category_id: form.category,
-                title: form.title,
-                content: form.content,
-            }
-            Add(requestData).then(response => {
-                if (response.data.resCode == 0) {
-                    root.$message.success(response.data.message);
-                    loading.value = false;
-                    dialog_info_flag.value = false;
-                    form.category = "";
-                    form.title = "";
-                    form.content = "";
-                    emit("addInfoFn");
-                }
-            }).catch(() => {
+            let requestData = JSON.parse(JSON.stringify(form));
+            requestData.role = requestData.role.join();
+            requestData.region = JSON.stringify(regionData.data);
+
+            UserAdd(requestData).then(res => {
+                loading.value = false;
+                reset(); // 重置表单
+                regionData.data = {};
+                dialog_info_flag.value = false
+            }).catch(err => {
                 loading.value = false;
             })
         };
@@ -137,13 +131,10 @@ export default {
 
         return {
             loading,
-            regionData,
-            status,
-            roleCheckList,
-            roleItem,
             form,
+            regionData,
+            roleItem,
             dialog_info_flag,
-            options,
             close,
             dialogOpened,
             submit,
