@@ -12,14 +12,21 @@
                     <el-input placeholder="请输入内容"></el-input>
                 </el-form-item>
                 <el-form-item label="地区：">
+                    <!-- region: 绑定的数据; getRegionFn: 返回数据的函数; level: 配置省市区街显隐 -->
+                    <!-- <cityPicker :level="['province', 'city', 'area']" :region="regionData.data" @getRegionFn="getRegion" /> -->
                     <cityPicker :region="regionData.data" @getRegionFn="getRegion" />
                     {{ regionData.data }}
                 </el-form-item>
                 <el-form-item label="是否启用：">
-                    是否启用
+                    <el-radio-group v-model="status">
+                        <el-radio :label="1">禁用</el-radio>
+                        <el-radio :label="2">启用</el-radio>
+                    </el-radio-group>
                 </el-form-item>
                 <el-form-item label="角色：">
-                    角色
+                    <el-checkbox-group v-model="roleCheckList">
+                        <el-checkbox v-for="(item, index) in roleItem.data" :key="index" :label="item.role">{{ item.name }}</el-checkbox>
+                    </el-checkbox-group>
                 </el-form-item>
             </el-form>
             <span slot="footer" class="dialog-footer">
@@ -34,6 +41,7 @@
 import { reactive, ref, watch } from "@vue/composition-api";
 import cityPicker from "@/components/CityPicker"
 import { Add } from "@/api/news.js";
+import { GetRoles } from "@/api/user"
 export default {
     name: "dialogInfo",
     components: {
@@ -55,6 +63,14 @@ export default {
         const regionData = reactive({
             data: {}
         });
+        // 是否启用
+        const status = ref(1);
+        // 角色选择
+        const roleCheckList = reactive(["sale"]);
+        // 角色项
+        const roleItem = reactive({
+            data: [],
+        });
         // 控制弹框显隐
         const dialog_info_flag = ref(false);
         const form = reactive({
@@ -64,7 +80,7 @@ export default {
         })
         const options = reactive({
             cateList: [],
-        })
+        });
 
         // dialog弹窗关闭后触发
         const close = () => {
@@ -72,10 +88,6 @@ export default {
             emit("update:flag", false); // 无逻辑处理时可以使用 .sync 修饰符的方式来处理
         };
 
-        // 对话框弹出来后执行
-        const dialogOpened = () => {
-            options.cateList = props.infoCate;
-        };
 
         // 确定添加信息
         const submit = () => {
@@ -98,11 +110,25 @@ export default {
             }).catch(() => {
                 loading.value = false;
             })
-        }
+        };
 
         const getRegion = (data) => {
             regionData.data = data
-        }
+        };
+
+        const getRoles = (data) => {
+            GetRoles().then(response => {
+                roleItem.data = response.data.data;
+            })
+        };
+
+        // 对话框弹出来后执行
+        const dialogOpened = () => {
+            getRoles();
+        };
+
+
+
 
         // 侦听父组件传进来flag的变化，若变化了，给dialog_info_flag重新赋值
         watch(() => props.flag, (newVal, oldVal) => {
@@ -112,6 +138,9 @@ export default {
         return {
             loading,
             regionData,
+            status,
+            roleCheckList,
+            roleItem,
             form,
             dialog_info_flag,
             options,

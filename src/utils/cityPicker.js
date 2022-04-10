@@ -113,6 +113,6 @@ export function cityPicker() {
         handleStreet,
         data,
         resData,
-        // ...toRefs(data) // 把对象类型转为基础数据类型，可进行结构响应
+        // ...toRefs(data) // 把对象类型转为基础数据类型，可进行解构响应
     }
 }
