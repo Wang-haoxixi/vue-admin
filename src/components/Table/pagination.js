@@ -6,9 +6,9 @@
 import { reactive, ref, onMounted, onBeforeMount } from "@vue/composition-api";
 export function pagination() {
     const pageData = reactive({
-        pageSizeArray: [3, 5, 20, 30, 40, 50, 100],
+        pageSizeArray: [ 5, 10, 20, 30, 40, 50, 100],
         currentPage: 1,
-        pageSize: 3,
+        pageSize: 5,
         total: 0,
     });
 

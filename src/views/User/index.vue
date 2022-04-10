@@ -18,14 +18,17 @@
                 <el-button type="danger" class="pull-right" @click="addUser">添加用户</el-button>
             </el-col>
         </el-row>
-        <tableComponent :config="data.tableConfig">
+        <tableComponent ref="userTable" :config="data.tableConfig" :tableRow.sync="data.tableRow">
             <template v-slot:status="slotData">
-                {{ slotData.data.name }}
-                <el-switch active-color="#13ce66" inactive-color="#ff4949"></el-switch>
+                <el-switch v-model="slotData.data.status" active-value="2" inactive-value="1" active-color="#13ce66" inactive-color="#ff4949"></el-switch>
             </template>
             <template v-slot:operation="slotData">
                 <el-button size="mini" type="danger" @click="handleDelete(slotData.data)">删除</el-button>
                 <el-button size="mini" type="success" @click="handleEdit(slotData.data)">编辑</el-button>
+            </template>
+            <!-- 插槽：批量删除按钮 -->
+            <template v-slot:tableFooterLeft>
+                <el-button @click="batchDelete">批量删除</el-button>
             </template>
         </tableComponent>
 
@@ -39,27 +42,30 @@ import { reactive, ref, onMounted } from "@vue/composition-api";
 import selectComponent from "@/components/select"
 import tableComponent from "@/components/Table"
 import { requestUrl } from "@/api/requestUrl"
+import { UserDelete } from "@/api/user"
 export default {
     name: "userIndex",
     components: { selectComponent, tableComponent, DialogAdd },
-    setup(props, { root }) {
+    setup(props, { root, refs }) {
         const data = reactive({
             dialogAdd: false,
             selectOptions: {
                 option: ["name", "phone", "email",],
                 aa: "aaaaaaa",
             },
+            // table选择的对象
+            tableRow: {},
             tableConfig: {
                 selection: true,
                 tHeaders: [
                     {
                         label: "邮箱/用户名",
-                        value: "title",
+                        value: "username",
                         width: 200,
                     },
                     {
                         label: "真实姓名",
-                        value: "name",
+                        value: "truename",
                         width: 120,
                     },
                     {
@@ -69,7 +75,7 @@ export default {
                     },
                     {
                         label: "地区",
-                        value: "address",
+                        value: "region",
                     },
                     {
                         label: "角色",
@@ -96,7 +102,7 @@ export default {
                     method: "post",
                     data: {
                         pageNumber: 1,
-                        pageSize: 3,
+                        pageSize: 5,
                     }
                 },
                 // 是否显示页码
@@ -108,22 +114,48 @@ export default {
         // -----------------------------------------------------------------
         // 添加用户按钮
         const addUser = () => {
-          data.dialogAdd = true;
+            data.dialogAdd = true;
         };
         // 删除
-        const handleDelete = (data) => {
-            console.log(data);
+        const handleDelete = (row) => {
+            data.tableRow.idItem = [ row.id ];
+            root.confirm({
+                content: "确认删除该用户？",
+                tip: "警告",
+                type: "warning",
+                fn: batchDeleteIng,
+            });
         };
         // 编辑
         const handleEdit = (data) => {
             console.log(data);
+        }
+        // 批量删除
+        const batchDelete = () => {
+            let ids = data.tableRow.idItem;
+            if (!ids || ids.length === 0) return root.$message.error("请勾选需要删除的用户");
+
+            root.confirm({
+                content: "确认批量删除选中的用户？",
+                tip: "警告",
+                type: "warning",
+                fn: batchDeleteIng,
+            });
+
+        };
+        const batchDeleteIng = () => {
+          UserDelete({ id: data.tableRow.idItem }).then((res) => {
+              refs.userTable.refresh() // 刷新表格
+              // console.log(res)
+            })
         }
 
         return {
             data,
             addUser,
             handleDelete,
-            handleEdit
+            handleEdit,
+            batchDelete
         }
     }
 };

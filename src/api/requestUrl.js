@@ -2,7 +2,7 @@
 
 const requestUrl = {
     // getUserUrl: "/user/getList/" // 用户列表
-    getUserUrl: "/news/getList/" // 用户列表
+    getUserUrl: "/user/getList/" // 用户列表
 };
 
 export {

@@ -40,6 +40,7 @@
 </template>
 
 <script>
+import sha1 from "sha1";
 import { reactive, ref, watch } from "@vue/composition-api";
 import cityPicker from "@/components/CityPicker"
 import { GetRoles, UserAdd } from "@/api/user"
@@ -95,6 +96,7 @@ export default {
             let requestData = JSON.parse(JSON.stringify(form));
             requestData.role = requestData.role.join();
             requestData.region = JSON.stringify(regionData.data);
+            requestData.password = sha1(requestData.password);
 
             UserAdd(requestData).then(res => {
                 loading.value = false;

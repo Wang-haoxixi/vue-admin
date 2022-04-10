@@ -1,6 +1,6 @@
 <template>
     <div>
-        <el-table :data="data.tableData" border style="width: 100%">
+        <el-table :data="data.tableData" border style="width: 100%" @selection-change="tableComponentSelectChange">
             <!-- 多选项 -->
             <el-table-column v-if="data.tableConfig.selection" type="selection" width="55"></el-table-column>
             <template v-for="(item, index) in data.tableConfig.tHeaders">
@@ -15,7 +15,19 @@
             </template>
         </el-table>
 
-        <el-pagination v-if="data.tableConfig.pagination" background @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="pageData.currentPage" :page-sizes="pageData.pageSizeArray" :page-size="pageData.pageSize" layout="total, sizes, prev, pager, next, jumper" :total="pageData.total"></el-pagination>
+        <div class="table-footer">
+            <el-row>
+                <el-col :span="4">
+                    <div class="tableFooterLeft">
+                        <slot name="tableFooterLeft"></slot>
+                    </div>
+                </el-col>
+                <el-col :span="20">
+                    <el-pagination class="pull-right" v-if="data.tableConfig.pagination" background @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="pageData.currentPage" :page-sizes="pageData.pageSizeArray" :page-size="pageData.pageSize" layout="total, sizes, prev, pager, next, jumper" :total="pageData.total"></el-pagination>
+                </el-col>
+            </el-row>
+        </div>
+
     </div>
 </template>
 
@@ -29,9 +41,13 @@ export default {
         config: {
             type: Object,
             default: () => { }
-        }
+        },
+        tableRow: {
+            type: Object,
+            default: () => { }
+        },
     },
-    setup(props, { root }) {
+    setup(props, { root, emit }) {
         // 加载数据
         const { resData, loadData } = tableLoadData();
         // 分页
@@ -61,6 +77,26 @@ export default {
                 },
             ]
         });
+
+        // --------------------------------------------------------
+        // 当选择项发生变化时会触发该事件
+        const tableComponentSelectChange = (value) => {
+            // props.tableRow
+            let ids = value.map(item => item.id) // 映射出id数组
+
+            let rowData = {
+                idItem: ids,
+            };
+            emit("update:tableRow", rowData) // 更新父组件传进来的属性的值
+        }
+
+        // 刷新表格数据
+        const refresh = () => {
+            loadData(data.tableConfig.requestData);
+        };
+
+
+        // --------------------------------------------------------
 
         // 循环遍历赋值
         const initTableConfig = () => {
@@ -97,10 +133,18 @@ export default {
         return {
             data, pageData,
             handleSizeChange, handleCurrentChange,
+            tableComponentSelectChange,
+            refresh,
         }
     }
 }
 </script>
 
 <style lang="scss" scoped>
+.table-footer {
+    padding: 15px 0;
+    .tableFooterLeft {
+        min-height: 10px;
+    }
+}
 </style>
