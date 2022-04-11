@@ -17,10 +17,10 @@ export function tableLoadData() { // VUE3.0的提炼内容方式
     const loadData = (params) => { // 请求表格接口获取数据
         let requestData = params
         getTableList(requestData).then(response => {
-            if (response && response.data.data.data.length > 0) {
-                resData.item = response.data.data.data
-                resData.total = response.data.data.total
-            }
+            // if (response && response.data.data.data.length > 0) {
+            resData.item = response.data.data.data
+            resData.total = response.data.data.total
+            // }
         }).catch(error => { })
     };
 

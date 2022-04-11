@@ -21,6 +21,15 @@ export function UserAdd(data) {
     })
 }
 
+// 编辑用户
+export function UserEdit(data) {
+    return service.request({
+        method: 'post',
+        url: '/user/edit/',
+        data,
+    })
+}
+
 // 删除用户
 export function UserDelete(data) {
     return service.request({
@@ -29,3 +38,13 @@ export function UserDelete(data) {
         data,
     })
 }
+
+// 用户禁启用
+export function UserActives(data) {
+    return service.request({
+        method: 'post',
+        url: '/user/actives/',
+        data,
+    })
+}
+

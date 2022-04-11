@@ -1,6 +1,6 @@
 <template>
     <div>
-        <el-select v-model="data.selectValue" placeholder="请输入" style="width:150px">
+        <el-select v-model="data.selectValue" placeholder="请输入" style="width:150px" @change="selectChange">
             <el-option v-for="(item, index) in data.initOption" :key="index" :label="item.label" :value="item.value">
 
             </el-option>
@@ -18,9 +18,15 @@ export default {
             default: () => {
                 return {};
             }
-        }
+        },
+        selectData: {
+            type: Object,
+            default: () => {
+                return {};
+            }
+        },
     },
-    setup(props, { root }) {
+    setup(props, { root, emit }) {
         const data = reactive({
             selectValue: "",//下拉选中值
             initOption: [],// 初始化下拉选项
@@ -47,10 +53,15 @@ export default {
         onMounted(() => {
             initOption()
         })
-
+        // 下拉选择值出发
+        const selectChange = (val) => {
+            let filterData = data.options.filter(item => item.value === val)[0];
+            emit("update:selectData", filterData)
+        };
         return {
             data,
-            initOption
+            initOption,
+            selectChange
         }
     }
 }

@@ -95,6 +95,14 @@ export default {
             loadData(data.tableConfig.requestData);
         };
 
+        // 带参数刷新表格数据
+        const paramsLoadTable = (params) => {
+            let requestData = Object.assign({}, params, { pageNumber: 1, pageSize: 5 })
+            data.tableConfig.requestData.data = requestData
+            console.log(data.tableConfig.requestData)
+            loadData(data.tableConfig.requestData);
+        }
+
 
         // --------------------------------------------------------
 
@@ -135,6 +143,7 @@ export default {
             handleSizeChange, handleCurrentChange,
             tableComponentSelectChange,
             refresh,
+            paramsLoadTable,
         }
     }
 }

@@ -4,13 +4,13 @@
             <el-col :span="20">
                 <el-form :inline="true" class="demo-form-inline">
                     <el-form-item label="关键字：">
-                        <selectComponent :config="data.selectOptions" />
+                        <selectComponent :config="data.selectOptions" :selectData.sync="data.selectData" />
                     </el-form-item>
                     <el-form-item>
-                        <el-input placeholder="请输入"></el-input>
+                        <el-input placeholder="请输入" v-model="data.keyWord"></el-input>
                     </el-form-item>
                     <el-form-item>
-                        <el-button type="danger">搜索</el-button>
+                        <el-button type="danger" @click="search">搜索</el-button>
                     </el-form-item>
                 </el-form>
             </el-col>
@@ -20,7 +20,7 @@
         </el-row>
         <tableComponent ref="userTable" :config="data.tableConfig" :tableRow.sync="data.tableRow">
             <template v-slot:status="slotData">
-                <el-switch v-model="slotData.data.status" active-value="2" inactive-value="1" active-color="#13ce66" inactive-color="#ff4949"></el-switch>
+                <el-switch @change="handleSwitch(slotData.data)" v-model="slotData.data.status" active-value="2" inactive-value="1" active-color="#13ce66" inactive-color="#ff4949"></el-switch>
             </template>
             <template v-slot:operation="slotData">
                 <el-button size="mini" type="danger" @click="handleDelete(slotData.data)">删除</el-button>
@@ -32,7 +32,7 @@
             </template>
         </tableComponent>
 
-        <DialogAdd :flag.sync="data.dialogAdd" />
+        <DialogAdd :flag.sync="data.dialogAdd" :editData.sync="data.editData" @refreshTableData="refreshData" />
     </div>
 </template>
 
@@ -42,12 +42,20 @@ import { reactive, ref, onMounted } from "@vue/composition-api";
 import selectComponent from "@/components/select"
 import tableComponent from "@/components/Table"
 import { requestUrl } from "@/api/requestUrl"
-import { UserDelete } from "@/api/user"
+import { UserDelete, UserActives } from "@/api/user"
 export default {
     name: "userIndex",
     components: { selectComponent, tableComponent, DialogAdd },
-    setup(props, { root, refs }) {
+    setup(props, { root, refs, emit }) {
         const data = reactive({
+            // 关键字
+            keyWord: "",
+            // 选择的值
+            selectData: {},
+            // 编辑对话框回显的数据
+            editData: {},
+            // 阻止连续点击滑块按钮
+            switchUpdate: false,
             dialogAdd: false,
             selectOptions: {
                 option: ["name", "phone", "email",],
@@ -111,6 +119,10 @@ export default {
 
         })
 
+        // let obj = {}
+        // obj["aa"]
+        // console.log(111,obj)
+
         // -----------------------------------------------------------------
         // 添加用户按钮
         const addUser = () => {
@@ -118,7 +130,7 @@ export default {
         };
         // 删除
         const handleDelete = (row) => {
-            data.tableRow.idItem = [ row.id ];
+            data.tableRow.idItem = [row.id];
             root.confirm({
                 content: "确认删除该用户？",
                 tip: "警告",
@@ -127,8 +139,10 @@ export default {
             });
         };
         // 编辑
-        const handleEdit = (data) => {
-            console.log(data);
+        const handleEdit = (row) => {
+            data.dialogAdd = true;
+            // 子组件赋值
+            data.editData = Object.assign({}, row);
         }
         // 批量删除
         const batchDelete = () => {
@@ -144,10 +158,33 @@ export default {
 
         };
         const batchDeleteIng = () => {
-          UserDelete({ id: data.tableRow.idItem }).then((res) => {
-              refs.userTable.refresh() // 刷新表格
-              // console.log(res)
+            UserDelete({ id: data.tableRow.idItem }).then((res) => {
+                refreshData();
+                // console.log(res)
             })
+        }
+        // 刷新表格
+        const refreshData = () => {
+            refs.userTable.refresh();
+        }
+
+        // 切换滑块
+        const handleSwitch = (params) => {
+            if (data.switchUpdate == true) return false; // 节流
+            data.switchUpdate = true;
+            UserActives({ id: params.id, status: params.status }).then((res) => {
+                root.$message.success(res.data.message)
+                data.switchUpdate = false;
+            })
+        }
+
+        // 搜索
+        const search = () => {
+            let params = { // 参数配置
+                [data.selectData.value]: data.keyWord,
+            }
+            // 调用子组件中搜索刷新表格的方法 并传参
+            refs.userTable.paramsLoadTable(params)
         }
 
         return {
@@ -155,7 +192,10 @@ export default {
             addUser,
             handleDelete,
             handleEdit,
-            batchDelete
+            batchDelete,
+            refreshData,
+            handleSwitch,
+            search
         }
     }
 };
