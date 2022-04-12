@@ -36,8 +36,10 @@ router.beforeEach((to, from, next) => {
       if (store.getters["app/roles"].length === 0) { // 判断vuex中的角色数组若为空，就调用vuex中获取角色的方法GET_USER_ROLE 得到角色数组
         store.dispatch("permission/GET_USER_ROLE").then(response => {
           // console.log('defend_roles222:', store.getters["permission/roles"])
-          let role = response  
-
+          let role = response.role
+          let button = response.button
+          // 修改buttonPermissions的值
+          store.commit("app/SET_BUTTON_PERMISSIONS", button);
           // 1、调用app中的 mutations中的 SET_ROLES 给roles赋值
           // 2、得到role用户角色后，再次调用VUEX中创建动态路由的方法GET_ASYNC_ROUTER,并传值,GET_ASYNC_ROUTER方式用于匹配路由
           store.commit("app/SET_ROLES", role);
@@ -57,7 +59,7 @@ router.beforeEach((to, from, next) => {
             // ...to: 防止内容发生变化的情况
             next({ ...to, replace: true }); // 放行 // next() vue-router  @3.0.7版本不会报错冒红
 
-            
+
 
           })
         })

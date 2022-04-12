@@ -50,9 +50,9 @@ const actions = {// 提交mutations中的方法并运行 (直接commit中的方�
   GET_USER_ROLE(content, state) {
     return new Promise((res, rej) => {
       GetUserRole().then(response => {
-        let roles = response.data.data.role;
+        let data = response.data.data;
         // GetUserRole接口需要调用成功后才能进入下一步
-        res(roles); // 告诉外面接口请求完毕  此时表示接口已经调用成功
+        res(data); // 告诉外面接口请求完毕  此时表示接口已经调用成功
       }).catch(error => { })
     })
   },

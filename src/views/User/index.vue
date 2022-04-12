@@ -47,6 +47,7 @@ export default {
     name: "userIndex",
     components: { selectComponent, tableComponent, DialogAdd },
     setup(props, { root, refs, emit }) {
+        // btnPermission("aaaaa")
         const data = reactive({
             // 关键字
             keyWord: "",

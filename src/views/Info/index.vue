@@ -63,9 +63,9 @@
       <el-table-column prop="admin" label="管理人"><template>管理员</template></el-table-column>
       <el-table-column label="操作" width="250px">
         <template slot-scope="scope">
-          <el-button size="mini" type="success" @click="edit(scope.row.id)">编辑</el-button>
+          <el-button size="mini" type="success" @click="edit(scope.row.id)" v-if="$btnPermission('info.edit')">编辑</el-button>
           <el-button size="mini" type="success" @click="editInfo(scope.row)">编辑详情</el-button>
-          <el-button size="mini" type="danger" @click="delCurrent(scope.row)">删除</el-button>
+          <el-button size="mini" type="danger" @click="delCurrent(scope.row)" v-if="$btnPermission('info.delete')">删除</el-button>
         </template>
       </el-table-column>
     </el-table>

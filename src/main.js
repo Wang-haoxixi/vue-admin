@@ -19,8 +19,6 @@ Vue.use(global); // 注册全局方法
 
 Vue.config.productionTip = false;
 
-
-
 new Vue({
   router,
   store,
