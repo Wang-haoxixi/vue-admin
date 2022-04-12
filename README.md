@@ -1,5 +1,9 @@
 # vue-admin
 
+# 超级管理员 15723141052@qq.com  admin123
+# 普通管理员 1570058176@139.com  admin123
+# 角色 rolemanage@139.com  admin123
+
 ## Project setup
 ```
 npm install

@@ -95,7 +95,8 @@ export default router;
 
 /**
  * 
- * 动态路由
+ * 动态路由  
+ * 角色：[sale,technician,manager] [业务员,技术员,部门经理]
  * 
  */
 export const asyncRouterMap = [ // 暴露出去
@@ -106,6 +107,7 @@ export const asyncRouterMap = [ // 暴露出去
     name: "Info",
     component: Layout,
     meta: {
+      role: ["sale", "manager"], // 分配角色
       system: "infoSystem", // 自定义属性key，可以通过登录的时候获取的用户角色来匹配该用户的系统权限
       name: "信息管理",
       icon: "info",
@@ -116,6 +118,7 @@ export const asyncRouterMap = [ // 暴露出去
         name: "InfoIndex",
         component: () => import("../views/Info/index.vue"),
         meta: {
+          role: ["sale"],
           name: "信息列表",
         },
       },
@@ -124,6 +127,7 @@ export const asyncRouterMap = [ // 暴露出去
         name: "InfoCategory",
         component: () => import("../views/Info/category.vue"),
         meta: {
+          role: ["sale", "manager"],
           name: "信息分类",
         },
       },
@@ -133,6 +137,7 @@ export const asyncRouterMap = [ // 暴露出去
         hide: true,
         component: () => import("../views/Info/details.vue"),
         meta: {
+          role: ["sale"],
           name: "信息详情",
         },
       },
@@ -144,6 +149,7 @@ export const asyncRouterMap = [ // 暴露出去
     name: "User",
     component: Layout,
     meta: {
+      role: ["sale"],
       system: "userSystem",
       name: "用户管理",
       icon: "user",
@@ -154,6 +160,7 @@ export const asyncRouterMap = [ // 暴露出去
         name: "UserIndex",
         component: () => import("../views/User/index.vue"),
         meta: {
+          role: ["sale"],
           name: "用户列表",
         },
       },

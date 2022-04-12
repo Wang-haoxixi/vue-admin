@@ -10,7 +10,7 @@ import { getToken, removeToken, removeUserName } from '@/utils/app.js'
 const whiteRoute = ["/login"];
 
 router.beforeEach((to, from, next) => {
-  console.log(to)
+  // console.log(to)
   if (getToken()) {
     /**
      * 1、to == /console
@@ -33,28 +33,31 @@ router.beforeEach((to, from, next) => {
        * 2、以什么条件处理动态路由 ----> 通过登录时获取用户角色，判断用户所拥有的角色来处理动态路由
        */
       // console.log('defend_roles111:', store.getters["permission/roles"])
-      if (store.getters["permission/roles"].length === 0) { // 判断vuex中的角色数组若为空，就调用vuex中获取角色的方法GET_USER_ROLE 得到角色数组
+      if (store.getters["app/roles"].length === 0) { // 判断vuex中的角色数组若为空，就调用vuex中获取角色的方法GET_USER_ROLE 得到角色数组
         store.dispatch("permission/GET_USER_ROLE").then(response => {
           // console.log('defend_roles222:', store.getters["permission/roles"])
-          let role = response  // 得到role用户角色后，再次调用VUEX中创建动态路由的方法GET_ASYNC_ROUTER，并传值
+          let role = response  
+
+          // 1、调用app中的 mutations中的 SET_ROLES 给roles赋值
+          // 2、得到role用户角色后，再次调用VUEX中创建动态路由的方法GET_ASYNC_ROUTER,并传值,GET_ASYNC_ROUTER方式用于匹配路由
+          store.commit("app/SET_ROLES", role);
           store.dispatch("permission/GET_ASYNC_ROUTER", role).then(response => {
 
             console.log(response);
 
-            // 获取新增的动态路由
-            let newAddRouter = store.getters["permission/newAddRouter"];
-            let allRouters = store.getters["permission/allRouters"];
+            let newAddRouter = store.getters["permission/newAddRouter"]; //新增的动态路由
+            let allRouters = store.getters["permission/allRouters"]; //全部路由
 
             // 向indexjs中添加动态路由
             router.addRoutes(newAddRouter);
             // 手动刷新router中routes数组,将获取的所有的的路由赋值给他
+            // console.log(router)
             router.options.routes = allRouters;
 
-            console.log(router)
             // ...to: 防止内容发生变化的情况
-            next({ ...to, replace: true }); // 放行
+            next({ ...to, replace: true }); // 放行 // next() vue-router  @3.0.7版本不会报错冒红
 
-            // next() vue-router  @3.0.7版本不会报错冒红
+            
 
           })
         })

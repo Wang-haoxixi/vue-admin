@@ -3,6 +3,11 @@ import Cookies from 'js-cookie'
 import { setToken, setUserName, getUserName, removeToken, removeUserName } from "@/utils/app.js"
 
 const state = {
+
+  // 用户角色
+  roles: [],
+
+
   // 是否收缩菜单
   isCollapse: JSON.parse(sessionStorage.getItem("isCollapse")) || false,
   // token
@@ -13,11 +18,19 @@ const state = {
 
 }
 const getters = {
-  
+  roles: state => state.roles,
 }
 // 提交方法， 改变state中的值（同步）
 
 const mutations = {
+
+  // 修改roles值
+  SET_ROLES(state, value) {
+    state.roles = value;
+    // console.log('roles:', state.roles)
+  },
+
+
   // 改变导航菜单收缩状态
   SET_COLLAPSE(state) {
     // 每次点击收缩菜单按钮都进行cookie存储状态值
@@ -63,6 +76,7 @@ const actions = {// 提交mutations中的方法并运行 (直接commit中的方�
       removeUserName();
       commit("SET_TOKEN", "");
       commit("SET_USERNAME", "");
+      commit("SET_ROLES", []); // 清除roles
       res();//不传值了
     })
   }

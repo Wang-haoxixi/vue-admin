@@ -26,7 +26,7 @@
                     </el-radio-group>
                 </el-form-item>
                 <!-- <el-form-item label="角色：" prop="role" required> -->
-                <el-form-item label="系统：" prop="role" required>
+                <el-form-item label="角色：" prop="role" required>
                     <el-checkbox-group v-model="form.role">
                         <el-checkbox v-for="(item, index) in roleItem.data" :key="index" :label="item.role">{{ item.name }}</el-checkbox>
                     </el-checkbox-group>
@@ -229,7 +229,7 @@ export default {
         };
 
         const getRoles = (data) => {
-            GetSystem().then(response => {
+            GetRoles().then(response => {
                 roleItem.data = response.data.data;
             })
         };
