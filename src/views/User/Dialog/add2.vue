@@ -8,7 +8,7 @@
                 <el-form-item label="姓名：" prop="truename">
                     <el-input v-model="form.truename" placeholder="请输入姓名"></el-input>
                 </el-form-item>
-                <el-form-item label="密码：" prop="password" :required="form.id ? false : true">
+                <el-form-item label="密码：" prop="password" required>
                     <el-input v-model="form.password" placeholder="请输入密码"></el-input>
                 </el-form-item>
                 <el-form-item label="手机号：" prop="phone">
@@ -25,8 +25,7 @@
                         <el-radio label="2">启用</el-radio>
                     </el-radio-group>
                 </el-form-item>
-                <!-- <el-form-item label="角色：" prop="role" required> -->
-                <el-form-item label="系统：" prop="role" required>
+                <el-form-item label="角色：" prop="role" required>
                     <el-checkbox-group v-model="form.role">
                         <el-checkbox v-for="(item, index) in roleItem.data" :key="index" :label="item.role">{{ item.name }}</el-checkbox>
                     </el-checkbox-group>
@@ -229,7 +228,7 @@ export default {
         };
 
         const getRoles = (data) => {
-            GetSystem().then(response => {
+            GetRoles().then(response => {
                 roleItem.data = response.data.data;
             })
         };

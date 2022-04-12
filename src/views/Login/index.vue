@@ -72,6 +72,8 @@ import { stripscript, emailReg, codeReg } from "@/utils/validate.js";
 export default {
   name: "login",
   setup(props, content) {
+    // console.log(content.root.$store.getters["app/roles"])
+
     // 校验邮箱
     var validateEmail = (rule, value, callback) => {
       if (value === "") {
@@ -194,7 +196,6 @@ export default {
         if(data.resCode === 0){
           content.root.$message.success(data.message);
           content.root.$router.push({ name: 'Console' });
-          content.root.$message.success(data.message);
           clearClearIntervalFn();
         }
       })

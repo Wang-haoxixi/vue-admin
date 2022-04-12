@@ -1,13 +1,31 @@
 /**
  * 用户
  */
+import service from "@/utils/request.js";
 
 // 获取角色
-import service from "@/utils/request.js";
 export function GetRoles(data) {
     return service.request({
         method: 'post',
         url: '/role/',
+        data,
+    })
+}
+
+// 获取菜单（根据系统类型获取）
+export function GetSystem(data) {
+    return service.request({
+        method: 'post',
+        url: '/system/',
+        data,
+    })
+}
+
+// 用户角色（登录获取权限）
+export function GetUserRole(data) {
+    return service.request({
+        method: 'post',
+        url: '/userRole/',
         data,
     })
 }

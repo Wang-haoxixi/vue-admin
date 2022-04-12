@@ -9,8 +9,12 @@ const state = {
   token: "",
   // username
   username: getUserName() || "",
+
+
 }
-const getters = {}
+const getters = {
+  
+}
 // 提交方法， 改变state中的值（同步）
 
 const mutations = {
