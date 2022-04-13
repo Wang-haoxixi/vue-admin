@@ -35,11 +35,10 @@ Vue.use(VueRouter);
  */
 export const defaultRouterMap = [  // 暴露出去 ,然后到permission store模块中引入，用于匹配用户系统
 
-
   {
     path: "/",
     redirect: "login",
-    hidden: true,
+    hidden: true, // 隐藏菜单
     meta: {
       name: "主页",
     },
@@ -74,6 +73,30 @@ export const defaultRouterMap = [  // 暴露出去 ,然后到permission store模
     ]
   },
 
+  // 404页面
+  {
+    path: "/page404",
+    component: Layout,
+    hidden: true,
+    meta: {
+      name: "404",
+      icon: "404",
+    },
+    // redirect: "/404",
+    children: [
+      {
+        path: "/404",
+        component: () => import("../views/page404.vue"),
+        meta: {
+          name: "404",
+        },
+      },
+    ]
+  },
+
+
+
+
 
 ];
 
@@ -82,7 +105,6 @@ export const defaultRouterMap = [  // 暴露出去 ,然后到permission store模
 
 
 const routes = defaultRouterMap;
-
 const router = new VueRouter({
   routes,
 });
@@ -170,5 +192,11 @@ export const asyncRouterMap = [ // 暴露出去
     ]
   },
 
+  // 404页面配置一定要放在所有路由的最末尾，不然有可能会一直匹配到星号，从而重定向到404页面
+  {
+    path: "*", // 地址匹配不到时就重定向至404页面
+    redirect: "/404",
+    hidden: true,
+  }
 
 ];

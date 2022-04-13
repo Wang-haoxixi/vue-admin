@@ -73,10 +73,13 @@ const actions = {// 提交mutations中的方法并运行 (直接commit中的方�
         newAddRouter = asyncRouterMap.filter(item => {
           if (hasPermission(role, item)) {
 
-
+            /** 
+             * ----------------2、以角色分配权限-------------
+             * 
+            */
             // 肯定需要优先判断子级路由,有就处理，反之不处理
             if (item.children && item.children.length > 0) {
-              
+
               // 循环过滤子级 匹配符合的路由 将路由集交给当前的children
               item.children = item.children.filter(childItem => {
                 if (hasPermission(role, childItem)) {
@@ -90,9 +93,10 @@ const actions = {// 提交mutations中的方法并运行 (直接commit中的方�
           }
 
 
+
           /**
            * 
-           * 一下代码是以系统来分配路由
+           * -------------------1、以下代码是以系统来分配路由-----------------
            * 
            */
           // ES6 includes() 数组方法判断动态路由中的每一项的system是否包含与role用户角色中，若是就将该路由返回出去赋值
@@ -100,7 +104,12 @@ const actions = {// 提交mutations中的方法并运行 (直接commit中的方�
           //   return item;
           // }
         })
-      }
+
+        // 最后需要将404页面加加进去，因为404每种情况都必须要有
+        newAddRouter.push(asyncRouterMap[asyncRouterMap.length - 1]);
+      };
+
+
 
 
       // 匹配得到该用户的角色所对应的动态路由后， 调用mutations中的SET_ROUTER方法，更新路由
