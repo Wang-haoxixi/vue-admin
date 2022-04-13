@@ -13,11 +13,7 @@
                 <UploadImg :imgUrlProp.sync="form.imgUrl" :uploadConfig="uploadConfig" />
             </el-form-item>
             <el-form-item label="发布日期：">
-                <el-date-picker
-                    disabled
-                    v-model="form.create_date"
-                    type="date"
-                    placeholder="选择日期">
+                <el-date-picker disabled v-model="form.create_date" type="date" placeholder="选择日期">
                 </el-date-picker>
             </el-form-item>
             <el-form-item label="详细内容：">
@@ -31,7 +27,7 @@
 </template>
 
 <script>
-import { reactive, ref, onMounted} from "@vue/composition-api";
+import { reactive, ref, onMounted, onActivated } from "@vue/composition-api";
 import { GetList, EditInfo } from "@/api/news.js";
 import { formatterTime } from "@/utils/common"
 import UploadImg from "@/components/UploadImg";
@@ -48,13 +44,22 @@ export default {
         quillEditor,
         UploadImg,
     },
-    setup(props, { root }){
+    setup(props, { root }) {
         onMounted(() => {
-            id.value = root.$store.getters["infoDetails/infoId"];
+            
             title.value = root.$store.getters["infoDetails/infoTitle"];
             getCategory();
-            getNewInfo();
+            
         });
+        onActivated(() => {
+            console.log('onActivated')
+            /**
+             * 以下两行本来放onMounted中的，但由于详情页面有用keep-alive设置缓存，当第二三次进入页面是还是第一次进入的详情数据，
+             * 故放在onActivated中，onActivated是在created和mounted后执行，且组件缓存后只会执行onActivated生命周期
+             */
+            id.value = root.$store.getters["infoDetails/infoId"];
+            getNewInfo();
+        })
         const id = ref("");
         const title = ref("");
         const loading = ref(false);
@@ -68,10 +73,10 @@ export default {
         });
         // 上传图片的配置
         const uploadConfig = reactive({
-            ak:"GHnOuYtiHUliqHtmZRR9AUnTXd005wu-wsBHwHdQ",
-            sk:"ymd_-LMTCdl7wnHwvEMqQ70IE7mnNUvSk632TJ01",
-            buckety:"vue3-admin",
-            action:"http://up-z2.qiniup.com"
+            ak: "GHnOuYtiHUliqHtmZRR9AUnTXd005wu-wsBHwHdQ",
+            sk: "ymd_-LMTCdl7wnHwvEMqQ70IE7mnNUvSk632TJ01",
+            buckety: "vue3-admin",
+            action: "http://up-z2.qiniup.com"
         })
         // 表单内容
         const form = reactive({
@@ -82,7 +87,7 @@ export default {
             imgUrl: "",
         })
         // --------------------------------------------------------------------------------------------------------------------
-        
+
         // 保存
         const onSubmit = () => {
             loading.value = true;
@@ -95,16 +100,16 @@ export default {
                 // status: 0,
             }
             EditInfo(requestData).then(response => {
-                if(response.data.resCode == 0){
+                if (response.data.resCode == 0) {
                     root.$message.success(response.data.message);
                     loading.value = false;
                     root.$router.back(-1);
                 }
-            }).catch(() => { 
+            }).catch(() => {
                 loading.value = false;
             })
         }
-        
+
         // 获取信息详情
         const getNewInfo = () => {
             let reqData = {

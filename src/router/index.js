@@ -120,6 +120,7 @@ export const asyncRouterMap = [ // 暴露出去
         meta: {
           role: ["sale"],
           name: "信息列表",
+          keepAlive: true, // 是否需要缓存路由
         },
       },
       {
@@ -129,16 +130,18 @@ export const asyncRouterMap = [ // 暴露出去
         meta: {
           role: ["sale", "manager"],
           name: "信息分类",
+          keepAlive: true, // 是否需要缓存路由
         },
       },
       {
         path: "/details",
         name: "Details",
-        hide: true,
+        hide: true, //自定义hide属性用于判断改路由是否在左侧菜单显示
         component: () => import("../views/Info/details.vue"),
         meta: {
           role: ["sale"],
           name: "信息详情",
+          keepAlive: true, // 是否需要缓存路由
         },
       },
     ]

@@ -246,6 +246,7 @@ export default {
         };
 
         const getRoles = (data) => {
+            if (roleItem.data.length > 0 && permButton.data.length > 0) return false;
             // 获取角色
             GetRoles().then(response => {
                 roleItem.data = response.data.data;

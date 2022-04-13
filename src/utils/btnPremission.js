@@ -33,6 +33,11 @@ Vue.directive("btnPrem", {
 
         // 获取VUEX中的按钮权限数据 
         let buttons = store.getters["app/btnPerms"]; // ['info.edit', 'info.delete']
+        // 获取角色
+        let roles = store.getters["app/roles"]; // ['admin']
+
+        // 判断当前用户是否有admin超管角色，若有就直接返回真
+        if (roles.includes("admin")) { return true }; 
 
         // 判断传入的值是否在buttons数组中存在，返回-1说明不存在，>=0说明存在
         return buttons.indexOf(premission) !== -1
