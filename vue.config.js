@@ -63,15 +63,27 @@ module.exports = {
     https: false, // 编译失败时刷新页面
     hot: true, // 开启热加载
     hotOnly: false,
+    // proxy: { // string | Object  // 设置代理
+    //   '/api': {
+    //     /* 目标代理服务器地址 */
+    //     // target: 'http://old.web-jshtml.cn/productapi/token', // api服务器地址
+    //     target: 'http://old.web-jshtml.cn/vue_admin_api/token', // api服务器地址
+    //     /* 允许跨域 */
+    //     changeOrigin: true,
+    //     pathRewrite: {
+    //       '^/api': '' //规定请求地址以什么作为开头
+    //     }
+    //   },
+    // },
     proxy: { // string | Object  // 设置代理
-      '/api': {
+      [process.env.VUE_APP_API]: {
         /* 目标代理服务器地址 */
         // target: 'http://old.web-jshtml.cn/productapi/token', // api服务器地址
         target: 'http://old.web-jshtml.cn/vue_admin_api/token', // api服务器地址
         /* 允许跨域 */
         changeOrigin: true,
         pathRewrite: {
-          '^/api': '' //规定请求地址以什么作为开头
+          ['^' + process.env.VUE_APP_API]: '' //规定请求地址以什么作为开头
         }
       },
     },

@@ -4,6 +4,7 @@
       <img src="../../../assets/vuelogo.png" alt=""/>
     </h1>
     <el-menu
+      :default-active="$route.path"
       background-color="transparent"
       text-color="#fff"
       @open="handleOpen"
@@ -39,6 +40,7 @@ import { reactive, ref, isRef, toRefs, onMounted, computed } from "@vue/composit
 export default {
   name: "navMenu",
   setup(props, { root, content, }) {
+    console.log(root.$route)
     /**
      * data
      */

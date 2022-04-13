@@ -1,7 +1,8 @@
 import { Message } from 'element-ui';
 import { getToken, getUserName } from "@/utils/app";
 import axios from "axios"
-const BASEURL = process.env.NODE_ENV === 'production' ? '' : '/api';
+// const BASEURL = process.env.NODE_ENV === 'production' ? '' : '/api';
+const BASEURL = process.env.NODE_ENV === 'production' ? process.env.VUE_APP_API : process.env.VUE_APP_API;
 // 创建axios,赋给变量service
 const service = axios.create({
   baseURL: BASEURL, //每次发送的请求都会带上该前缀   http://192.168.0.106:8080/api/  == http://www.web-jshtml.cn/api/
@@ -25,11 +26,11 @@ service.interceptors.request.use(function (config) {
 // 添加响应拦截器
 service.interceptors.response.use(function (response) {
   // 对响应数据做点什么
-  if(response.data.resCode !== 0){
+  if (response.data.resCode !== 0) {
     Message.error(response.data.message)
     return Promise.reject(response);
-  }else{
-    return response; 
+  } else {
+    return response;
   }
 }, function (error) {
   // 对响应错误做点什么

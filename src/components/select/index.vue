@@ -31,7 +31,7 @@ export default {
             selectValue: "",//下拉选中值
             initOption: [],// 初始化下拉选项
             options: [ // 预置下拉选项值
-                { label: "姓名", value: "name" },
+                { label: "姓名", value: "truename" },
                 { label: "手机号", value: "phone" },
                 { label: "邮箱", value: "email" },
             ]
@@ -53,7 +53,7 @@ export default {
         onMounted(() => {
             initOption()
         })
-        // 下拉选择值出发
+        // 下拉选择值触发
         const selectChange = (val) => {
             let filterData = data.options.filter(item => item.value === val)[0];
             emit("update:selectData", filterData)

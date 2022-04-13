@@ -59,7 +59,7 @@ export default {
             switchUpdate: false,
             dialogAdd: false,
             selectOptions: {
-                option: ["name", "phone", "email",],
+                option: ["truename", "phone", "email",],
                 aa: "aaaaaaa",
             },
             // table选择的对象
