@@ -30,6 +30,15 @@ export function GetUserRole(data) {
     })
 }
 
+// 获取按钮权限
+export function GetPermButton(data) {
+    return service.request({
+        method: 'post',
+        url: '/permButton/',
+        data,
+    })
+}
+
 // 添加用户
 export function UserAdd(data) {
     return service.request({

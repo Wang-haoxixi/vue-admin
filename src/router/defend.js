@@ -37,9 +37,12 @@ router.beforeEach((to, from, next) => {
         store.dispatch("permission/GET_USER_ROLE").then(response => {
           // console.log('defend_roles222:', store.getters["permission/roles"])
           let role = response.role
-          let button = response.button
+          let button = response.button // 全局注册的按钮权限方式
+          let btnPerms = response.btnPerm
           // 修改buttonPermissions的值
           store.commit("app/SET_BUTTON_PERMISSIONS", button);
+          // 修改按钮权限
+          store.commit("app/SET_BUTTON_PERMISSIONS_2", btnPerms);
           // 1、调用app中的 mutations中的 SET_ROLES 给roles赋值
           // 2、得到role用户角色后，再次调用VUEX中创建动态路由的方法GET_ASYNC_ROUTER,并传值,GET_ASYNC_ROUTER方式用于匹配路由
           store.commit("app/SET_ROLES", role);

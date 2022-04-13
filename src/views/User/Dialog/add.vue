@@ -1,7 +1,7 @@
 <template>
     <div>
         <el-dialog title="新增" :visible.sync="dialog_info_flag" @close="close" width="576px" @opened="dialogOpened">
-            <el-form ref="form" :model="form" :rules="rules" label-width="90px">
+            <el-form ref="form" :model="form" :rules="rules" label-width="100px">
                 <el-form-item label="用户名：" prop="username" required>
                     <el-input v-model="form.username" placeholder="请输入邮箱"></el-input>
                 </el-form-item>
@@ -31,6 +31,18 @@
                         <el-checkbox v-for="(item, index) in roleItem.data" :key="index" :label="item.role">{{ item.name }}</el-checkbox>
                     </el-checkbox-group>
                 </el-form-item>
+                <el-form-item label="按钮权限：">
+                    <template v-if="permButton.data.length > 0">
+                        <div v-for="(item,index) in permButton.data" :key="index">
+                            <h4>{{ item.name }}</h4>
+                            <template v-if="item.perm && item.perm.length>0">
+                                <el-checkbox-group v-model="form.btnPerm">
+                                    <el-checkbox v-for="(permItem, permIndex) in item.perm" :key="permIndex" :label="permItem.value">{{ permItem.name }}</el-checkbox>
+                                </el-checkbox-group>
+                            </template>
+                        </div>
+                    </template>
+                </el-form-item>
             </el-form>
             <span slot="footer" class="dialog-footer">
                 <el-button @click="dialog_info_flag = false">取 消</el-button>
@@ -44,7 +56,7 @@
 import sha1 from "sha1";
 import { reactive, ref, watch } from "@vue/composition-api";
 import cityPicker from "@/components/CityPicker"
-import { GetRoles, UserAdd, UserEdit, GetSystem } from "@/api/user"
+import { GetRoles, UserAdd, UserEdit, GetSystem, GetPermButton } from "@/api/user"
 import { emailReg, codeReg } from "@/utils/validate.js";
 export default {
     name: "dialogAdd",
@@ -122,7 +134,7 @@ export default {
             region: "",
             status: "1",
             role: [],
-            // btnPerm: "",
+            btnPerm: "", //按钮权限
         })
         // 地区数据
         const regionData = reactive({
@@ -132,6 +144,10 @@ export default {
         const roleItem = reactive({
             data: [],
         });
+        // 按钮权限数据
+        const permButton = reactive({
+            data: [],
+        })
         // 控制弹框显隐
         const dialog_info_flag = ref(false);
 
@@ -175,6 +191,7 @@ export default {
                     // loading.value = true;
                     let requestData = JSON.parse(JSON.stringify(form));
                     requestData.role = requestData.role.join();
+                    requestData.btnPerm = requestData.btnPerm.join();
                     requestData.region = JSON.stringify(regionData.data);
 
 
@@ -229,8 +246,14 @@ export default {
         };
 
         const getRoles = (data) => {
+            // 获取角色
             GetRoles().then(response => {
                 roleItem.data = response.data.data;
+            })
+            // 获取按钮权限
+            GetPermButton().then(response => {
+                permButton.data = response.data.data;
+                // console.log(permButton.data)
             })
         };
 
@@ -242,15 +265,19 @@ export default {
             // 获取父组件传过来的编辑数据
             let editData = props.editData;
             if (editData.id) { // 编辑
-                editData.role = editData.role.split(',')  // 转为数组
+                editData.role = editData.role ? editData.role.split(',') : [];  // 转为数组
+                editData.btnPerm = editData.btnPerm ? editData.btnPerm.split(',') : [];
+                // 循环JSON对象
+                for (let key in editData) {
+                    form[key] = editData[key]; // TOD..........????
+                }
             } else { // 添加
                 form.id && delete form.id;
-            }
-            // 循环JSON对象
-            for (let key in editData) {
-                form[key] = editData.id ? editData[key] : ""; // TOD..........????
+                form.btnPerm = form.btnPerm ? form.btnPerm.split(',') : [];
             }
             console.log(form);
+
+
         };
 
 
@@ -266,6 +293,7 @@ export default {
             form,
             regionData,
             roleItem,
+            permButton,
             dialog_info_flag,
             rules,
             close,

@@ -8,6 +8,8 @@ const state = {
   roles: [],
   // 按钮权限
   buttonPermissions: [],
+  // 指令式按钮权限数据
+  btnPerms: [],
 
 
   // 是否收缩菜单
@@ -23,6 +25,7 @@ const getters = {
   // 获取
   roles: state => state.roles,
   buttonPermissions: state => state.buttonPermissions,
+  btnPerms: state => state.btnPerms,
 }
 // 提交方法， 改变state中的值（同步）
 
@@ -37,6 +40,10 @@ const mutations = {
   SET_BUTTON_PERMISSIONS(state, value) {
     state.buttonPermissions = value;
     // console.log('buttonPermissions:', state.buttonPermissions)
+  },
+  // 指令式修改按钮权限
+  SET_BUTTON_PERMISSIONS_2(state, value) {
+    state.btnPerms = value;
   },
 
 
